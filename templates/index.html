@@ -1,3 +1,218 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ SYSTEM TERMINATION IN PROGRESS</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000000;
+            font-family: monospace;
+        }
+
+        /* Кнопка запуска (Обход блокировки звука браузером) */
+        .start-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #020202;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .start-btn {
+            background: transparent;
+            border: 2px solid #00ff33;
+            color: #00ff33;
+            padding: 15px 40px;
+            font-size: 16px;
+            font-family: monospace;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(0, 255, 51, 0.2);
+            transition: all 0.3s ease;
+        }
+        .start-btn:hover {
+            background: #00ff33;
+            color: #000;
+            box-shadow: 0 0 30px rgba(0, 255, 51, 0.6);
+        }
+
+        #viewport-wrapper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-color: #020202;
+            transition: transform 0.4s cubic-bezier(0.18, 0.9, 0.3, 1.4);
+            transform-origin: center center;
+            display: none;
+        }
+        .glitch-scanlines {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
+            background-size: 100% 6px, 8px 100%;
+            z-index: 20;
+            pointer-events: none;
+        }
+        .stage {
+            position: absolute;
+            width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 5;
+        }
+        .hacker-console {
+            width: 94%; max-width: 880px; height: 580px;
+            background: rgba(2, 2, 2, 0.99);
+            border: 1px solid #00ff33;
+            box-shadow: 0 0 45px rgba(0, 255, 51, 0.15);
+            display: flex; flex-direction: column;
+        }
+        .console-header {
+            background: #050505; padding: 12px 18px;
+            border-bottom: 1px solid #00ff33; color: #00ff33;
+            display: flex; justify-content: space-between; font-size: 13px;
+        }
+        .console-body {
+            padding: 22px; color: #00ff33; font-size: 13px;
+            line-height: 1.7; overflow-y: auto; flex-grow: 1;
+        }
+        .ln-info { color: #00ff33; }
+        .ln-warn { color: #ffaa00; font-weight: bold; }
+        .ln-danger { color: #ff0033; font-weight: bold; text-shadow: 0 0 5px rgba(255,0,51,0.4); }
+        
+        .virus-shaking {
+            animation: extreme-shake 0.07s infinite alternate;
+        }
+        @keyframes extreme-shake {
+            0% { transform: translate(3px, -1px) scaleY(1.01); filter: contrast(140%) hue-rotate(0deg); }
+            100% { transform: translate(-3px, 2px) skewX(1deg); filter: contrast(180%) hue-rotate(90deg); }
+        }
+        .hardware-flash {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; z-index: 99; opacity: 0; pointer-events: none;
+        }
+        @keyframes hardware-die-burst {
+            0% { opacity: 0; }
+            15% { opacity: 1; background: #ff0033; }
+            40% { opacity: 0; }
+            100% { opacity: 1; background: #004b7e; }
+        }
+        .classic-shutdown {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #004b7e; z-index: 100;
+            display: none; flex-direction: column;
+            justify-content: center; align-items: center;
+            color: #ffffff; font-family: 'Segoe UI', Arial, sans-serif;
+            cursor: none; user-select: none;
+        }
+        .dots-circle {
+            position: relative; width: 65px; height: 65px; margin-bottom: 35px;
+        }
+        .circle-dot {
+            position: absolute; width: 6px; height: 6px;
+            background: #ffffff; border-radius: 50%; top: 0; left: 29px;
+            transform-origin: 3px 32px; opacity: 0;
+            animation: slow-fade-orbit 2.6s infinite linear;
+        }
+        .circle-dot:nth-child(1) { transform: rotate(0deg); animation-delay: 0s; }
+        .circle-dot:nth-child(2) { transform: rotate(30deg); animation-delay: 0.21s; }
+        .circle-dot:nth-child(3) { transform: rotate(60deg); animation-delay: 0.42s; }
+        .circle-dot:nth-child(4) { transform: rotate(90deg); animation-delay: 0.63s; }
+        .circle-dot:nth-child(5) { transform: rotate(120deg); animation-delay: 0.84s; }
+        .circle-dot:nth-child(6) { transform: rotate(150deg); animation-delay: 1.05s; }
+        .circle-dot:nth-child(7) { transform: rotate(180deg); animation-delay: 1.26s; }
+        .circle-dot:nth-child(8) { transform: rotate(210deg); animation-delay: 1.47s; }
+        .circle-dot:nth-child(9) { transform: rotate(240deg); animation-delay: 1.68s; }
+        .circle-dot:nth-child(10) { transform: rotate(270deg); animation-delay: 1.89s; }
+        .circle-dot:nth-child(11) { transform: rotate(300deg); animation-delay: 2.1s; }
+        .circle-dot:nth-child(12) { transform: rotate(330deg); animation-delay: 2.31s; }
+        @keyframes slow-fade-orbit {
+            0% { opacity: 1; }
+            50% { opacity: 0.1; }
+            100% { opacity: 1; }
+        }
+        .shutdown-label {
+            font-size: 23px; font-weight: 300; letter-spacing: 0.5px;
+        }
+        .gpu-artifacts {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(90deg, transparent, transparent 25px, rgba(255, 0, 85, 0.5) 25px, rgba(255, 0, 85, 0.4) 28px),
+                        repeating-linear-gradient(0deg, transparent, transparent 35px, rgba(0, 255, 100, 0.4) 35px, rgba(0, 255, 100, 0.3) 38px);
+            z-index: 150; display: none; pointer-events: none;
+        }
+        .frozen-content {
+            animation-play-state: paused !important;
+        }
+        .horror-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000000; z-index: 999;
+            display: none; justify-content: center; align-items: center;
+        }
+        .horror-msg {
+            color: #ff0011; font-size: 52px; font-weight: 900;
+            font-family: 'Courier New', Courier, monospace;
+            text-shadow: 0 0 40px #ff0000;
+            animation: blood-pulse 1.3s infinite alternate;
+        }
+        @keyframes blood-pulse {
+            0% { opacity: 0.1; transform: scale(0.92); filter: blur(4px); }
+            100% { opacity: 1; transform: scale(1.06); filter: blur(0px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Интерактивный барьер для разблокировки звука -->
+    <div class="start-overlay" id="gateOverlay">
+        <button class="start-btn" onclick="initializeVirus()">Запустить Сервер</button>
+    </div>
+
+    <div class="glitch-scanlines"></div>
+
+    <div id="viewport-wrapper">
+        <div class="hardware-flash" id="flash"></div>
+        <div class="gpu-artifacts" id="artifacts"></div>
+
+        <div class="stage" id="mainStage">
+            <div class="hacker-console" id="consoleWindow">
+                <div class="console-header">
+                    <span>☠️ RANSOMWARE_MUTEX_EXEC.EXE</span>
+                    <span>THREAT_LEVEL: SYSTEM_DESTRUCTION</span>
+                </div>
+                <div class="console-body" id="logs"></div>
+            </div>
+        </div>
+
+        <div class="classic-shutdown" id="shutdownScreen">
+            <div class="dots-circle" id="loaderCircle">
+                <div class="circle-dot"></div><div class="circle-dot"></div>
+                <div class="circle-dot"></div><div class="circle-dot"></div>
+                <div class="circle-dot"></div><div class="circle-dot"></div>
+                <div class="circle-dot"></div><div class="circle-dot"></div>
+                <div class="circle-dot"></div><div class="circle-dot"></div>
+                <div class="circle-dot"></div><div class="circle-dot"></div>
+            </div>
+            <div class="shutdown-label">Выключение</div>
+        </div>
+    </div>
+
+    <div class="horror-overlay" id="finalHorrorBox">
+        <div class="horror-msg">ТВОЙ КОМПЬЮТЕР МОЙ</div>
+    </div>
     <script>
         const wrapper = document.getElementById('viewport-wrapper');
         const logsContainer = document.getElementById('logs');
