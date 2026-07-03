@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FATAL ERROR</title>
+    <title>SYSTEM MALFUNCTION</title>
     <style>
         * {
             box-sizing: border-box;
@@ -15,138 +15,139 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #000;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        /* 1. ЭФФЕКТ ХАРДКОРНОГО ГЛЮКА ВИДЕОКАРТЫ (АРТЕФАКТЫ) */
-        .glitch-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 10;
-            pointer-events: none;
-            background: transparent;
-        }
-
-        /* Анимация жесткого сбоя матрицы экрана */
-        @keyframes hardware-failure {
-            0% { background: rgba(255, 0, 0, 0.1); transform: skewX(0deg); filter: blur(0px); }
-            10% { background: rgba(0, 0, 255, 0.2); transform: skewX(-5deg) scaleY(1.05); filter: contrast(200%); }
-            12% { background: transparent; transform: skewX(0deg); }
-            45% { background: rgba(0, 255, 0, 0.15); transform: translateY(-5px); }
-            47% { background: transparent; transform: translateY(0); filter: chromatic-aberration; }
-            90% { background: rgba(255, 0, 100, 0.2); transform: scale(1.02); }
-            92% { background: #000; filter: noise; }
-            95% { background: transparent; }
-        }
-
-        /* Окно критической ошибки посреди экрана */
-        .error-box {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 500px;
-            background: #111;
-            border: 3px solid #ff0000;
-            color: #ff3333;
-            padding: 25px;
-            z-index: 15;
-            box-shadow: 0 0 50px rgba(255, 0, 0, 0.6);
+            background-color: #020202;
             font-family: monospace;
-            text-align: center;
         }
 
-        .error-box h1 {
-            font-size: 24px;
-            margin-bottom: 15px;
-            letter-spacing: 2px;
-            animation: blink 0.3s infinite alternate;
-        }
-
-        @keyframes blink {
-            0% { opacity: 1; }
-            100% { opacity: 0.2; }
-        }
-
-        .bar-progress {
+        /* Зона взлома */
+        .stage {
+            position: absolute;
             width: 100%;
-            height: 20px;
-            border: 1px solid #ff0000;
-            margin-top: 20px;
-            position: relative;
-            background: #000;
-        }
-
-        .bar-fill {
             height: 100%;
-            background: #ff0000;
-            width: 0%;
-            transition: width 0.1s linear;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
         }
 
-        /* 2. РЕАЛИСТИЧНЫЙ СИНИЙ ЭКРАН ВЫКЛЮЧЕНИЯ WINDOWS */
-        .windows-shutdown {
+        /* Консоль */
+        .hacker-console {
+            width: 90%;
+            max-width: 800px;
+            height: 500px;
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid #00ff33;
+            box-shadow: 0 0 30px rgba(0, 255, 51, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .console-header {
+            background: #0a0a0a;
+            padding: 10px 15px;
+            border-bottom: 1px solid #00ff33;
+            color: #00ff33;
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+
+        .console-body {
+            padding: 20px;
+            color: #00ff33;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        /* Цвета логов */
+        .ln-info { color: #00ff33; }
+        .ln-warn { color: #ffcc00; }
+        .ln-danger { color: #ff0033; font-weight: bold; }
+        
+        /* Визуальный перекос экрана (эффект вируса) */
+        .virus-glitch {
+            animation: screen-shake 0.15s infinite alternate;
+        }
+
+        @keyframes screen-shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); filter: hue-rotate(0deg); }
+            100% { transform: translate(-1px, -2px) rotate(0.5deg); filter: hue-rotate(45deg); }
+        }
+
+        /* Скрытый оверлей смерти железа */
+        .hardware-dead {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff;
+            z-index: 99;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.1s ease;
+        }
+
+        /* Тот самый реалистичный экран выключения с МНОЖЕСТВОМ кружочков по кругу */
+        .classic-shutdown {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #004275; /* Тот самый синий цвет Windows 10/11 */
+            background-color: #004b7e; /* Насыщенный глубокий Windows-синий */
             z-index: 100;
-            display: none; 
+            display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: white;
+            color: #ffffff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            cursor: none;
             user-select: none;
-            cursor: none; /* Прячем курсор мыши для реализма */
         }
 
-        /* Идеальное вращение точек Windows (эффект гусеницы) */
-        .win-loader {
+        /* Круг из множества медленных точек */
+        .dots-circle {
             position: relative;
             width: 60px;
             height: 60px;
-            margin-bottom: 35px;
+            margin-bottom: 30px;
         }
 
-        .win-dot {
+        .circle-dot {
             position: absolute;
-            width: 7px;
-            height: 7px;
-            background-color: #ffffff;
+            width: 6px;
+            height: 6px;
+            background: #ffffff;
             border-radius: 50%;
+            top: 0; left: 27px;
+            transform-origin: 3px 30px;
             opacity: 0;
-            transform: rotate(225deg);
-            animation: windows-orbit 4.5s infinite;
+            animation: slow-fade-orbit 2.4s infinite linear;
         }
 
-        /* Тайминги задержек, чтобы точки плавно догоняли друг друга по кругу */
-        .win-dot:nth-child(1) { animation-delay: 180ms; }
-        .win-dot:nth-child(2) { animation-delay: 360ms; }
-        .win-dot:nth-child(3) { animation-delay: 540ms; }
-        .win-dot:nth-child(4) { animation-delay: 720ms; }
-        .win-dot:nth-child(5) { animation-delay: 900ms; }
-        .win-dot:nth-child(6) { animation-delay: 1080ms; }
+        /* Создаем 12 точек, расположенных по кругу */
+        .circle-dot:nth-child(1) { transform: rotate(0deg); animation-delay: 0s; }
+        .circle-dot:nth-child(2) { transform: rotate(30deg); animation-delay: 0.2s; }
+        .circle-dot:nth-child(3) { transform: rotate(60deg); animation-delay: 0.4s; }
+        .circle-dot:nth-child(4) { transform: rotate(90deg); animation-delay: 0.6s; }
+        .circle-dot:nth-child(5) { transform: rotate(120deg); animation-delay: 0.8s; }
+        .circle-dot:nth-child(6) { transform: rotate(150deg); animation-delay: 1.0s; }
+        .circle-dot:nth-child(7) { transform: rotate(180deg); animation-delay: 1.2s; }
+        .circle-dot:nth-child(8) { transform: rotate(210deg); animation-delay: 1.4s; }
+        .circle-dot:nth-child(9) { transform: rotate(240deg); animation-delay: 1.6s; }
+        .circle-dot:nth-child(10) { transform: rotate(270deg); animation-delay: 1.8s; }
+        .circle-dot:nth-child(11) { transform: rotate(300deg); animation-delay: 2.0s; }
+        .circle-dot:nth-child(12) { transform: rotate(330deg); animation-delay: 2.2s; }
 
-        @keyframes windows-orbit {
-            0% { transform: rotate(180deg); opacity: 1; animation-timing-function: ease-out; }
-            7% { transform: rotate(300deg); animation-timing-function: linear; }
-            30% { transform: rotate(410deg); animation-timing-function: ease-in-out; }
-            39% { transform: rotate(645deg); animation-timing-function: linear; }
-            70% { transform: rotate(770deg); opacity: 1; animation-timing-function: ease-out; }
-            75% { transform: rotate(900deg); animation-timing-function: ease-out; }
-            76% { transform: rotate(900deg); opacity: 0; }
-            100% { transform: rotate(900deg); opacity: 0; }
+        @keyframes slow-fade-orbit {
+            0% { opacity: 1; }
+            50% { opacity: 0.2; }
+            100% { opacity: 1; }
         }
 
-        .shutdown-text {
-            font-size: 24px;
+        .shutdown-label {
+            font-size: 22px;
             font-weight: 300;
             letter-spacing: 0.5px;
         }
@@ -154,60 +155,94 @@
 </head>
 <body>
 
-    <!-- Экран сбоя железа -->
-    <div class="glitch-screen" id="glitchLayer"></div>
+    <div class="hardware-dead" id="flash"></div>
 
-    <div class="error-box" id="errorBox">
-        <h1>⚙️ КРИТИЧЕСКИЙ СБОЙ ПАМЯТИ</h1>
-        <p>Напряжение шины процессора вышло за пределы нормы.</p>
-        <p style="margin-top: 10px; color: #aaa;">Дамп физической памяти на диск...</p>
-        <div class="bar-progress">
-            <div class="bar-fill" id="progressBar"></div>
+    <div class="stage" id="mainStage">
+        <div class="hacker-console" id="consoleWindow">
+            <div class="console-header">
+                <span>☠️ MEMORY_EXPLOIT.SH</span>
+                <span>STATUS: RUNNING</span>
+            </div>
+            <div class="console-body" id="logs"></div>
         </div>
     </div>
 
-    <!-- Заводской экран Windows "Выключение" -->
-    <div class="windows-shutdown" id="shutdownScreen">
-        <div class="win-loader">
-            <div class="win-dot"></div>
-            <div class="win-dot"></div>
-            <div class="win-dot"></div>
-            <div class="win-dot"></div>
-            <div class="win-dot"></div>
-            <div class="win-dot"></div>
+    <!-- Реалистичный экран медленного циклического выключения -->
+    <div class="classic-shutdown" id="shutdownScreen">
+        <div class="dots-circle">
+            <div class="circle-dot"></div>
+            <div class="circle-dot"></div>
+            <div class="circle-dot"></div>
+            <div class="circle-dot"></div>
+            <div class="circle-dot"></div>
+            <div class="circle-dot"></div>
+            <div class="circle-dot"></div>
+            <div class="circle-dot"></div>
+            <div class="circle-dot"></div>
+            <div class="circle-dot"></div>
+            <div class="circle-dot"></div>
+            <div class="circle-dot"></div>
         </div>
-        <div class="shutdown-text">Выключение</div>
+        <div class="shutdown-label">Выключение</div>
     </div>
 
     <script>
-        const glitchLayer = document.getElementById('glitchLayer');
-        const progressBar = document.getElementById('progressBar');
-        const errorBox = document.getElementById('errorBox');
+        const logsContainer = document.getElementById('logs');
+        const consoleWindow = document.getElementById('consoleWindow');
         const shutdownScreen = document.getElementById('shutdownScreen');
+        const flash = document.getElementById('flash');
 
-        // 1. Запуск хардкорных визуальных артефактов
-        glitchLayer.style.animation = "hardware-failure 0.2s infinite";
+        const attackSteps = [
+            { t: "[INFO] Инициализация червя 'Worm.Win32.Overkill'...", type: 'ln-info' },
+            { t: "[OK] Поиск дескрипторов процессов безопасности...", type: 'ln-info' },
+            { t: "[WARN] Антивирус пытается заблокировать сессию... Подавление...", type: 'ln-warn' },
+            { t: "[SUCCESS] Защитник Windows отключен через реестр.", type: 'ln-info' },
+            { t: "[INFO] Инъекция шелл-кода в процесс wininit.exe...", type: 'ln-info' },
+            { t: "[OK] Доступ к Ring 0 (ядро системы) подтвержден.", type: 'ln-info' },
+            { t: "[DANGER] ВНИМАНИЕ: Начата перезапись таблицы разделов диска (GUID)...", type: 'ln-danger' },
+            { t: "[DANGER] Стирание секторов: 10%.. 35%.. 70%.. 100%", type: 'ln-danger' },
+            { t: "[WARN] Внутренняя температура чипсета превысила 92°C!", type: 'ln-warn' },
+            { t: "[INFO] Перехват шины управления питанием ACPI...", type: 'ln-info' },
+            { t: "[DANGER] Отправка принудительного сигнала отключения ACPI_STATE_S5...", type: 'ln-danger' },
+            { t: "[CRITICAL FAILURE] Сбой питания. Система уничтожена.", type: 'ln-danger' }
+        ];
 
-        // 2. Имитация быстрого заполнения "смертельного лога" до 100%
-        let progress = 0;
-        const progressInterval = setInterval(() => {
-            progress += Math.floor(Math.random() * 4) + 1;
-            if (progress >= 100) {
-                progress = 100;
-                clearInterval(progressInterval);
+        let currentStep = 0;
+
+        function printLog() {
+            if (currentStep < attackSteps.length) {
+                const step = attackSteps[currentStep];
+                const p = document.createElement('p');
+                p.className = step.type;
+                p.textContent = `[${new Date().toLocaleTimeString()}] ${step.t}`;
+                logsContainer.appendChild(p);
+                logsContainer.scrollTop = logsContainer.scrollHeight;
+
+                // Ближе к концу вирус начинает ломать экран
+                if (currentStep === 6) {
+                    consoleWindow.classList.add('virus-glitch');
+                }
+
+                currentStep++;
+                // Случайная реалистичная задержка между шагами
+                setTimeout(printLog, Math.random() * 600 + 400);
+            } else {
+                // ФИНАЛЬНЫЙ АККОРД: Короткая белая вспышка, как при аппаратном сбое питания
+                flash.style.opacity = '1';
                 
-                // ТРЫНДЕЦ: Всё гаснет на мгновение перед синим экраном
-                glitchLayer.style.animation = "none";
-                document.body.style.backgroundColor = "#000";
-                errorBox.style.display = "none";
-
                 setTimeout(() => {
-                    // Врубаем чистокровное выключение Windows
-                    shutdownScreen.style.display = "flex";
-                }, 400);
+                    // Прячем старую консоль
+                    document.getElementById('mainStage').style.display = 'none';
+                    flash.style.opacity = '0';
+                    
+                    // Показываем тот самый чистый, медленный экран завершения работы
+                    shutdownScreen.style.display = 'flex';
+                }, 250);
             }
-            progressBar.style.width = progress + '%';
-        }, 150);
+        }
+
+        // Запуск вирусной цепочки через 1 секунду после открытия сайта
+        setTimeout(printLog, 1000);
     </script>
 </body>
 </html>
