@@ -22,14 +22,15 @@
             height: 100%;
             position: relative;
             background-color: #020202;
-            transition: transform 0.6s cubic-bezier(0.15, 0.85, 0.3, 1.2);
+            transition: transform 0.5s cubic-bezier(0.15, 0.85, 0.3, 1.3);
             transform-origin: center center;
         }
+        /* Жесткие аналоговые помехи для создания лагов */
         .glitch-scanlines {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 4px, 6px 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 6px, 8px 100%;
             z-index: 20;
             pointer-events: none;
         }
@@ -60,7 +61,6 @@
             display: flex;
             justify-content: space-between;
             font-size: 13px;
-            letter-spacing: 1px;
         }
         .console-body {
             padding: 22px;
@@ -74,12 +74,13 @@
         .ln-warn { color: #ffaa00; font-weight: bold; }
         .ln-danger { color: #ff0033; font-weight: bold; text-shadow: 0 0 5px rgba(255,0,51,0.5); }
         
+        /* Безумная тряска консоли при лагах */
         .virus-shaking {
-            animation: extreme-shake 0.12s infinite alternate;
+            animation: extreme-shake 0.08s infinite alternate;
         }
         @keyframes extreme-shake {
-            0% { transform: translate(3px, 2px) skewX(-1deg); filter: hue-rotate(0deg) contrast(140%); }
-            100% { transform: translate(-3px, -2px) skewX(1deg); filter: hue-rotate(90deg) contrast(180%); }
+            0% { transform: translate(4px, -2px) skewX(-2deg); filter: hue-rotate(0deg) contrast(150%); }
+            100% { transform: translate(-4px, 3px) skewX(2deg); filter: hue-rotate(180deg) contrast(200%); }
         }
         .hardware-flash {
             position: absolute;
@@ -92,8 +93,7 @@
         @keyframes hardware-die-burst {
             0% { opacity: 0; }
             20% { opacity: 1; background: #ff0033; }
-            40% { opacity: 0; }
-            60% { opacity: 1; background: #fff; }
+            50% { opacity: 0; }
             100% { opacity: 1; background: #004b7e; }
         }
         .classic-shutdown {
@@ -149,22 +149,20 @@
             font-weight: 300;
             letter-spacing: 0.5px;
         }
+        /* Разрыв видеопамяти и лаги при "отвале" */
         .gpu-artifacts {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255, 0, 85, 0.4) 40px, rgba(255, 0, 85, 0.4) 43px),
-                        repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(0, 255, 100, 0.3) 60px, rgba(0, 255, 100, 0.3) 62px);
+            background: repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(255, 0, 85, 0.5) 30px, rgba(255, 0, 85, 0.4) 35px),
+                        repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(0, 255, 100, 0.4) 40px, rgba(0, 255, 100, 0.3) 45px);
             z-index: 150;
             display: none;
             pointer-events: none;
         }
-        
-        /* Замораживаем только контент вращаемого слоя */
         .frozen-content {
             animation-play-state: paused !important;
         }
-
-        /* ЖУТКИЙ ФИНАЛ */
+        /* ФИНАЛЬНЫЙ КРОВАВЫЙ ЭКРАН */
         .horror-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -173,19 +171,19 @@
             display: none;
             justify-content: center;
             align-items: center;
+            text-align: center;
         }
         .horror-msg {
-            color: #ff0033;
-            font-size: 50px;
+            color: #ff0011;
+            font-size: 55px;
             font-weight: 900;
-            letter-spacing: 8px;
             font-family: 'Courier New', Courier, monospace;
-            text-shadow: 0 0 30px #ff0000;
-            animation: text-pulse 2s infinite alternate;
+            text-shadow: 0 0 35px #ff0000;
+            animation: blood-pulse 1.5s infinite alternate;
         }
-        @keyframes text-pulse {
-            0% { opacity: 0.3; transform: scale(0.95); filter: blur(2px); }
-            100% { opacity: 1; transform: scale(1); filter: blur(0px); }
+        @keyframes blood-pulse {
+            0% { opacity: 0.2; transform: scale(0.9); filter: blur(3px); }
+            100% { opacity: 1; transform: scale(1.05); filter: blur(0px); }
         }
     </style>
 </head>
@@ -199,8 +197,8 @@
         <div class="stage" id="mainStage">
             <div class="hacker-console" id="consoleWindow">
                 <div class="console-header">
-                    <span>☠️ CVE_2026_OVERCLOCK_FALLBACK.SH</span>
-                    <span>THREAT_LEVEL: MAXIMUM</span>
+                    <span>☠️ HARDCORE_MALWARE_ATTACK.SH</span>
+                    <span>THREAT: CRITICAL</span>
                 </div>
                 <div class="console-body" id="logs"></div>
             </div>
@@ -219,9 +217,8 @@
         </div>
     </div>
 
-    <!-- Полностью изолированное окно финала поверх всего -->
     <div class="horror-overlay" id="finalHorrorBox">
-        <div class="horror-msg">YOU CANNOT RUN</div>
+        <div class="horror-msg">ТВОЙ КОМПЬЮТЕР МОЙ</div>
     </div>
 
     <script>
@@ -234,37 +231,79 @@
         const finalBox = document.getElementById('finalHorrorBox');
         const loaderCircle = document.getElementById('loaderCircle');
 
-        // ИНИЦИАЛИЗАЦИЯ СИСТЕМНОГО ГОЛОСА WINDOWS (Text-To-Speech)
-        function saySystemWords(text, speed = 0.8, pitch = 0.3) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // Сбрасываем старые очереди
-                const msg = new SpeechSynthesisUtterance(text);
-                msg.lang = 'en-US'; // На английском звучит максимально зловеще
-                msg.rate = speed;   // Замедляем темп для робо-эффекта
-                msg.pitch = pitch;  // Опускаем тон до замогильного
-                window.speechSynthesis.speak(msg);
+        // МОЩНЫЙ ЗВУКОВОЙ ДВИЖОК
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        // 1. Реалистичный звук печати/вывода логов (быстрые щелчки данных)
+        function playLogSound() {
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(Math.random() * 600 + 100, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.04);
+        }
+
+        // 2. Жуткий аналоговый треск и лаги железа
+        function playGlitchSound() {
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(Math.random() * 80 + 30, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.12);
+        }
+
+        // 3. Синтез страшного демонического смеха вируса
+        function playEvilLaugh() {
+            for (let i = 0; i < 28; i++) {
+                setTimeout(() => {
+                    let osc = audioCtx.createOscillator();
+                    let gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    // Частота идет вниз, имитируя дьявольский хохот
+                    let baseFreq = 160 - (Math.floor(i / 3) * 12);
+                    osc.frequency.setValueAtTime(baseFreq + (Math.random() * 15), audioCtx.currentTime);
+                    
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
+                    
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.25);
+                }, i * 90);
             }
         }
 
         const attackSteps = [
-            { t: "[INFO] Инициализация скрытого дескриптора ядра...", type: 'ln-info', voice: "Alert. Core override initiated." },
-            { t: "[OK] Обход подсистемы безопасности Windows Defender...", type: 'ln-info' },
-            { t: "[WARN] Выполнение контр-инъекции в стек вызовов...", type: 'ln-warn' },
-            { t: "[SUCCESS] Драйвер фильтра файловой системы отключен.", type: 'ln-info' },
-            { t: "[INFO] Поиск векторов монтирования дисков...", type: 'ln-info' },
-            { t: "[OK] Найдено: Диск C:\\ [NTFS], Диск D:\\ [NTFS].", type: 'ln-info', voice: "Hard drives compromised." },
-            { t: "[WARN] Попытка блокировки ввода-вывода... Подавление...", type: 'ln-warn' },
-            { t: "[DANGER] ВНИМАНИЕ: Запущена очистка секторов MFT/GUID...", type: 'ln-danger', voice: "Deleting partition tables." },
-            { t: "[DANGER] Очистка кэша дескрипторов файлов... Успешно.", type: 'ln-danger' },
-            { t: "[INFO] Данные токенов зашифрованы и отправлены в сеть.", type: 'ln-info' },
-            { t: "[WARN] Критическая ошибка шины SMBus! Перегрузка по току.", type: 'ln-warn', voice: "Hardware danger. Voltage failure." },
-            { t: "[DANGER] Сбой питания южного моста материнской платы.", type: 'ln-danger' },
-            { t: "[INFO] Принудительная отправка ACPI-запроса STATE_S5...", type: 'ln-info' },
-            { t: "[DANGER] Вызов прерывания процессора INT 19h (HALT)...", type: 'ln-danger', voice: "Fatal crash. Subsystem shutdown." },
-            { t: "[CRITICAL SYSTEM FAILURE] Система завершает работу.", type: 'ln-danger' }
+            { t: "[INFO] Развертывание эксплоита Ring-0...", type: 'ln-info' },
+            { t: "[OK] Обход проактивной защиты ядра OS...", type: 'ln-info' },
+            { t: "[WARN] Попытка изоляции сессии. Контр-инъекция кода...", type: 'ln-warn' },
+            { t: "[SUCCESS] Системные службы безопасности принудительно остановлены.", type: 'ln-info' },
+            { t: "[INFO] Сканирование секторов файловой структуры...", type: 'ln-info' },
+            { t: "[OK] Обнаружены локальные тома: C:\\, D:\\, E:\\", type: 'ln-info' },
+            { t: "[WARN] Защита секторов от записи преодолена.", type: 'ln-warn' },
+            { t: "[DANGER] КРИТИЧЕСКОЕ ДЕЙСТВИЕ: Перезапись главной файловой таблицы MFT...", type: 'ln-danger' },
+            { t: "[DANGER] Повреждено секторов: 4,096.. 16,384.. 65,536.. Выполнено.", type: 'ln-danger' },
+            { t: "[INFO] Дамп конфигурации реестра скопирован на удаленный сервер.", type: 'ln-info' },
+            { t: "[WARN] Опасность: Температура контроллера питания шины SMBus превысила 96°C!", type: 'ln-warn' },
+            { t: "[DANGER] Необратимый сбой питания каскада процессора (CORE_VOLT_ERR).", type: 'ln-danger' },
+            { t: "[INFO] Инициализация экстренного завершения работы ACPI Windows...", type: 'ln-info' },
+            { t: "[DANGER] Вызвано прямое прерывание материнской платы INT 15h.", type: 'ln-danger' },
+            { t: "[CRITICAL FAILURE] Операционная система уничтожена. Экран гаснет.", type: 'ln-danger' }
         ];
 
         let currentStep = 0;
+        let glitchSoundInterval;
 
         function printLog() {
             if (currentStep < attackSteps.length) {
@@ -275,19 +314,22 @@
                 logsContainer.appendChild(p);
                 logsContainer.scrollTop = logsContainer.scrollHeight;
 
+                // Врубаем звук клика данных при каждой строчке
+                playLogSound();
+
+                // На жестких лагах (шаг 7) экран начинает неистово трястись и трещать
                 if (currentStep === 7) {
                     consoleWindow.classList.add('virus-shaking');
-                }
-
-                // Если у шага прописан голос — заставляем Windows говорить
-                if (step.voice) {
-                    saySystemWords(step.voice);
+                    glitchSoundInterval = setInterval(playGlitchSound, 160);
                 }
 
                 currentStep++;
-                setTimeout(printLog, Math.random() * 900 + 700);
+                // Разная задержка для реализма лагов (от 0.6 до 1.5 сек)
+                setTimeout(printLog, Math.random() * 900 + 600);
             } else {
+                // Вспышка сбоя железа
                 flash.style.animation = "hardware-die-burst 0.5s forwards";
+                clearInterval(glitchSoundInterval);
                 
                 setTimeout(() => {
                     document.getElementById('mainStage').style.display = 'none';
@@ -295,29 +337,33 @@
                     flash.style.opacity = '0';
                     shutdownScreen.style.display = 'flex';
                     
-                    // Windows медленно крутится 6 секунд
+                    // Экран "Выключение" крутится 7 секунд
                     setTimeout(() => {
+                        // Жесткие артефакты видеокарты
                         artifacts.style.display = 'block';
-                        wrapper.style.transform = "rotate(43deg) scale(0.82)";
+                        wrapper.style.transform = "rotate(43deg) scale(0.80)";
                         
-                        // Замораживаем только точки, не ломая остальной JS
+                        // Замораживаем точки
                         loaderCircle.classList.add('frozen-content');
                         
-                        // Жуткий металлический голос сообщает об окончательном взломе
-                        saySystemWords("Goodbye. Your computer is mine.", 0.6, 0.1);
+                        // Бесконечный треск зависшей видеокарты (лагает!)
+                        let freezeBuzz = setInterval(playGlitchSound, 40);
                         
-                        // Спустя 4 секунды зависания под углом - врубаем финальный экран
+                        // Спустя 4 секунды зависания - финал
                         setTimeout(() => {
+                            clearInterval(freezeBuzz);
                             wrapper.style.display = 'none';
-                            finalBox.style.display = 'flex'; // Гарантированно открываем надпись
+                            finalBox.style.display = 'flex'; // Показываем надпись
+                            playEvilLaugh(); // Включаем жуткий смех
                         }, 4000);
 
-                    }, 6000); 
+                    }, 7000); 
 
                 }, 500);
             }
         }
 
+        // Запуск через 1.5 секунды
         setTimeout(printLog, 1500);
     </script>
 </body>
