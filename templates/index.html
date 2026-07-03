@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚠️ SYSTEM BREACH</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+            cursor: default;
+        }
+
+        /* ===== ПОЛНОЭКРАННЫЙ КОНТЕЙНЕР ===== */
+        #container {
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ===== ТЕРМИНАЛЬНЫЙ ТЕКСТ ===== */
+        #terminal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #00ff41;
+            font-size: 1.2rem;
+            text-align: center;
+            z-index: 10;
+            text-shadow: 0 0 20px #00ff4144;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        #terminal .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background: #00ff41;
+            animation: blink 0.8s infinite;
+            vertical-align: text-bottom;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        #terminal .line {
+            opacity: 0;
+            animation: typeIn 0.1s ease-out forwards;
+        }
+
+        #terminal .line:nth-child(1) { animation-delay: 0.8s; }
+        #terminal .line:nth-child(2) { animation-delay: 1.6s; }
+        #terminal .line:nth-child(3) { animation-delay: 2.4s; }
+        #terminal .line:nth-child(4) { animation-delay: 3.2s; }
+
+        @keyframes typeIn {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== ГЛИТЧ-ЭФФЕКТЫ ===== */
+        .glitch-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Строки кода */
+        .code-line {
+            position: absolute;
+            color: #00ff41;
+            font-size: 0.7rem;
+            font-family: 'Courier New', monospace;
+            opacity: 0;
+            white-space: nowrap;
+            animation: codeRain 3s linear infinite;
+        }
+
+        .code-line:nth-child(odd) {
+            color: #ff0040;
+            animation-duration: 2.5s;
+        }
+
+        .code-line:nth-child(3n) {
+            color: #ffcc00;
+            animation-duration: 4s;
+        }
+
+        @keyframes codeRain {
+            0% {
+                opacity: 0;
+                transform: translateY(-100vh);
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100vh);
+            }
+        }
+
+        /* ===== ЭФФЕКТ РАЗРЫВА (как в кино) ===== */
+        .breach-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 20;
+            opacity: 0;
+            pointer-events: none;
+            animation: breachFlash 0.3s ease-out 4.5s forwards;
+        }
+
+        @keyframes breachFlash {
+            0% {
+                opacity: 0;
+                background: #000;
+            }
+            10% {
+                opacity: 1;
+                background: #fff;
+            }
+            20% {
+                opacity: 0.9;
+                background: #ff0040;
+            }
+            30% {
+                opacity: 0.8;
+                background: #000;
+            }
+            40% {
+                opacity: 1;
+                background: #00ff41;
+            }
+            50% {
+                opacity: 0.9;
+                background: #000;
+            }
+            60% {
+                opacity: 1;
+                background: #fff;
+            }
+            70% {
+                opacity: 0.5;
+                background: #000;
+            }
+            80% {
+                opacity: 1;
+                background: #ff0040;
+            }
+            90% {
+                opacity: 0.3;
+                background: #000;
+            }
+            100% {
+                opacity: 0;
+                background: #000;
+            }
+        }
+
+        /* ===== ФИНАЛЬНЫЙ ЭКРАН ===== */
+        #final-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 30;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            animation: finalReveal 1s ease-out 5.5s forwards;
+        }
+
+        @keyframes finalReveal {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+                pointer-events: all;
+            }
+        }
+
+        #final-screen h1 {
+            font-size: 4rem;
+            color: #00ff41;
+            text-shadow: 0 0 40px #00ff4166, 0 0 80px #00ff4133;
+            letter-spacing: 10px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        #final-screen .sub {
+            color: #00ff4188;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            letter-spacing: 4px;
+        }
+
+        #final-screen .sub .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 1.2em;
+            background: #00ff41;
+            animation: blink 0.8s infinite;
+            vertical-align: text-bottom;
+            margin-left: 5px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* ===== ИСКАЖЕНИЯ (глитч-эффекты на финальном экране) ===== */
+        .glitch-text {
+            position: relative;
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: '⚠️ ACCESS GRANTED ⚠️';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+
+        .glitch-text::before {
+            color: #ff0040;
+            z-index: -1;
+            animation: glitchShift 0.1s infinite alternate;
+        }
+
+        .glitch-text::after {
+            color: #00ffff;
+            z-index: -2;
+            animation: glitchShift 0.15s infinite alternate-reverse;
+        }
+
+        @keyframes glitchShift {
+            0% { transform: translate(-3px, 2px); }
+            100% { transform: translate(3px, -2px); }
+        }
+
+        /* ===== СТАТИСТИКА В УГЛУ ===== */
+        #stats {
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            color: #00ff4144;
+            font-size: 0.6rem;
+            font-family: 'Courier New', monospace;
+            text-align: right;
+            z-index: 5;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 6s forwards;
+        }
+
+        #stats .val {
+            color: #00ff41aa;
+        }
+
+        /* ===== ШУМ ===== */
+        #noise {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent 0px,
+                transparent 2px,
+                rgba(0, 255, 65, 0.01) 2px,
+                rgba(0, 255, 65, 0.01) 4px
+            );
+            animation: noiseMove 0.05s steps(2) infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes noiseMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(2px, -2px); }
+        }
+
+        /* ===== АДАПТАЦИЯ ===== */
+        @media (max-width: 600px) {
+            #terminal {
+                font-size: 0.8rem;
+                padding: 20px;
+            }
+            #final-screen h1 {
+                font-size: 2rem;
+                letter-spacing: 5px;
+            }
+            #final-screen .sub {
+                font-size: 0.8rem;
+            }
+            .code-line {
+                font-size: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="container">
+
+    <!-- ШУМ -->
+    <div id="noise"></div>
+
+    <!-- СТРОКИ КОДА (падающие) -->
+    <div class="glitch-layer" id="codeRain"></div>
+
+    <!-- ТЕРМИНАЛ -->
+    <div id="terminal">
+        <div class="line">> INITIALIZING SYSTEM... <span class="cursor"></span></div>
+        <div class="line">> ESTABLISHING SECURE CONNECTION...</div>
+        <div class="line">> BYPASSING FIREWALL... ██████████ 100%</div>
+        <div class="line" style="color: #ffcc00;">> ACCESS GRANTED. WELCOME, OPERATOR.</div>
+    </div>
+
+    <!-- ЭФФЕКТ ВЗЛОМА (как в кино) -->
+    <div class="breach-overlay"></div>
+
+    <!-- ФИНАЛЬНЫЙ ЭКРАН -->
+    <div id="final-screen">
+        <h1 class="glitch-text">⚠️ ACCESS GRANTED ⚠️</h1>
+        <div class="sub">
+            <span style="color: #ff0040;">▶</span> SYSTEM BREACHED <span class="cursor"></span>
+        </div>
+        <div style="margin-top: 30px; color: #00ff4144; font-size: 0.8rem; letter-spacing: 2px;">
+            ████████████████████████████████████
+        </div>
+        <div style="margin-top: 40px; display: flex; gap: 30px; flex-wrap: wrap; justify-content: center;">
+            <span style="color: #00ff4166; font-size: 0.7rem;">🔓 FIREWALL: <span style="color: #00ff41;">OFFLINE</span></span>
+            <span style="color: #00ff4166; font-size: 0.7rem;">📡 CONNECTION: <span style="color: #00ff41;">SECURE</span></span>
+            <span style="color: #00ff4166; font-size: 0.7rem;">⚡ SYSTEM: <span style="color: #ffcc00;">COMPROMISED</span></span>
+        </div>
+    </div>
+
+    <!-- СТАТИСТИКА -->
+    <div id="stats">
+        <div>NODE: <span class="val">HACKER-BREACH-01</span></div>
+        <div>UPTIME: <span class="val" id="uptime">00:00:00</span></div>
+        <div>PACKETS: <span class="val" id="packets">0</span></div>
+    </div>
+
+</div>
+
+<script>
+    // ===== ГЕНЕРАЦИЯ СТРОК КОДА =====
+    (function generateCodeRain() {
+        const container = document.getElementById('codeRain');
+        const strings = [
+            'ERROR: SEGFAULT at 0x7FFF8A3B2F1C',
+            'WARNING: UNAUTHORIZED ACCESS DETECTED',
+            'KERNEL PANIC: SYSTEM HALTED',
+            '> ROOT ACCESS GRANTED',
+            'DECRYPTING: ../../etc/shadow',
+            '⚠️ FIREWALL BYPASSED',
+            'BUFFER OVERFLOW: 0xDEADBEEF',
+            'INJECTING SHELLCODE...',
+            'CONNECTION: 192.168.0.1:443',
+            'HANDSHAKE: AES-256-CBC',
+            'PAYLOAD LOADED: 87%',
+            'SESSION ID: 0x7F3A2B1C',
+            'PRIVILEGE ESCALATION: SUCCESS',
+            'SECURE CHANNEL: ESTABLISHED',
+            'DATA EXFILTRATION: IN PROGRESS'
+        ];
+
+        // Создаём 50-70 строк
+        for (let i = 0; i < 60; i++) {
+            const line = document.createElement('div');
+            line.className = 'code-line';
+            line.textContent = strings[i % strings.length] + ' ' + Math.random().toString(16).substring(2, 8);
+            line.style.left = Math.random() * 90 + '%';
+            line.style.fontSize = (0.5 + Math.random() * 0.8) + 'rem';
+            line.style.animationDelay = (Math.random() * 5) + 's';
+            line.style.animationDuration = (3 + Math.random() * 4) + 's';
+            line.style.color = ['#00ff41', '#ff0040', '#ffcc00', '#00ffff'][Math.floor(Math.random() * 4)];
+            container.appendChild(line);
+        }
+    })();
+
+    // ===== ТАЙМЕР АПТАЙМА =====
+    (function updateUptime() {
+        const start = Date.now();
+        const uptimeEl = document.getElementById('uptime');
+        const packetsEl = document.getElementById('packets');
+
+        function formatTime(ms) {
+            const totalSec = Math.floor(ms / 1000);
+            const h = String(Math.floor(totalSec / 3600)).padStart(2, '0');
+            const m = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
+            const s = String(totalSec % 60).padStart(2, '0');
+            return `${h}:${m}:${s}`;
+        }
+
+        setInterval(() => {
+            const elapsed = Date.now() - start;
+            uptimeEl.textContent = formatTime(elapsed);
+            packetsEl.textContent = Math.floor(Math.random() * 999999) + 1;
+        }, 1000);
+    })();
+
+    // ===== ЭФФЕКТ МЕРЦАНИЯ В КОНЦЕ =====
+    (function finalGlitch() {
+        const finalScreen = document.getElementById('final-screen');
+        const glitchText = finalScreen.querySelector('.glitch-text');
+
+        // Случайные глитч-эффекты на финальном экране
+        setInterval(() => {
+            if (Math.random() < 0.1) {
+                glitchText.style.transform = `translate(${(Math.random() - 0.5) * 10}px, ${(Math.random() - 0.5) * 10}px)`;
+                setTimeout(() => {
+                    glitchText.style.transform = 'none';
+                }, 100);
+            }
+            if (Math.random() < 0.05) {
+                document.getElementById('container').style.filter = `brightness(${0.8 + Math.random() * 0.4})`;
+                setTimeout(() => {
+                    document.getElementById('container').style.filter = 'none';
+                }, 150);
+            }
+        }, 500);
+    })();
+
+    // ===== ЗВУКОВОЙ ЭФФЕКТ (опционально) =====
+    // Если хотите добавить звук взлома — раскомментируйте
+    /*
+    function playBreachSound() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.3);
+            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + 0.5);
+        } catch(e) { /* тихо */ }
+    }
+    setTimeout(playBreachSound, 4500);
+    */
+</script>
+
+</body>
+</html>
