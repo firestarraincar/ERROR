@@ -55,7 +55,7 @@
             background-color: #020202;
             transition: transform 0.4s cubic-bezier(0.18, 0.9, 0.3, 1.4);
             transform-origin: center center;
-            display: none; /* Скрыто до клика */
+            display: none;
         }
         .glitch-scanlines {
             position: absolute;
@@ -213,7 +213,6 @@
     <div class="horror-overlay" id="finalHorrorBox">
         <div class="horror-msg">ТВОЙ КОМПЬЮТЕР МОЙ</div>
     </div>
-
     <script>
         const wrapper = document.getElementById('viewport-wrapper');
         const logsContainer = document.getElementById('logs');
@@ -226,7 +225,6 @@
 
         let audioCtx;
 
-        // Полноценный звук треска жесткого диска (HDD механика)
         function playHDDNoise() {
             if (!audioCtx) return;
             let bufferSize = audioCtx.sampleRate * 0.025;
@@ -252,7 +250,6 @@
             noise.start();
         }
 
-        // Звук перегрузки железа и короткого замыкания (Голос глитчей)
         function playGlitchSound() {
             if (!audioCtx) return;
             let osc = audioCtx.createOscillator();
@@ -267,11 +264,8 @@
             osc.stop(audioCtx.currentTime + 0.15);
         }
 
-        // Страшный финальный звук взрыва железа, скрежета металла и разрушения
         function playHardwareDestructionSound() {
             if (!audioCtx) return;
-            
-            // Каскад из низкочастотных взрывов и металлического скрежета
             for (let i = 0; i < 40; i++) {
                 setTimeout(() => {
                     let osc = audioCtx.createOscillator();
@@ -279,8 +273,6 @@
                     let filter = audioCtx.createBiquadFilter();
 
                     osc.type = Math.random() > 0.4 ? 'sawtooth' : 'square';
-                    
-                    // Падающий, разрывающийся гул
                     let currentFreq = 300 - (i * 6) + (Math.random() * 40);
                     if (currentFreq < 30) currentFreq = 30;
                     osc.frequency.setValueAtTime(currentFreq, audioCtx.currentTime);
@@ -331,12 +323,9 @@
         let glitchSoundInterval;
 
         function initializeVirus() {
-            // Инициализируем аудиоконтекст по клику пользователя
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             document.getElementById('gateOverlay').style.display = 'none';
             wrapper.style.display = 'block';
-            
-            // Начинаем вывод логов
             setTimeout(printLog, 500);
         }
 
@@ -349,7 +338,6 @@
                 logsContainer.appendChild(p);
                 logsContainer.scrollTop = logsContainer.scrollHeight;
 
-                // Механический скрежет HDD жесткого диска при печати каждой строки лога!
                 playHDDNoise();
                 if (Math.random() > 0.4) playHDDNoise();
 
@@ -360,10 +348,9 @@
 
                 currentStep++;
                 
-                // Симуляция ЛАГОВ: задержки прыгают случайным образом
                 let lagDelay = Math.random() * 600 + 300;
                 if (currentStep > 7 && Math.random() > 0.8) {
-                    lagDelay = 1800; // Сильное зависание системы (вирус лагает)
+                    lagDelay = 1800;
                 }
                 setTimeout(printLog, lagDelay);
             } else {
@@ -373,3 +360,28 @@
                 setTimeout(() => {
                     document.getElementById('mainStage').style.display = 'none';
                     flash.style.animation = "none";
+                    flash.style.opacity = '0';
+                    shutdownScreen.style.display = 'flex';
+                    
+                    setTimeout(() => {
+                        artifacts.style.display = 'block';
+                        wrapper.style.transform = "rotate(43deg) scale(0.80)";
+                        loaderCircle.classList.add('frozen-content');
+                        
+                        let freezeBuzz = setInterval(playHDDNoise, 60);
+                        
+                        setTimeout(() => {
+                            clearInterval(freezeBuzz);
+                            wrapper.style.display = 'none';
+                            finalBox.style.display = 'flex'; 
+                            playHardwareDestructionSound(); 
+                        }, 4000);
+
+                    }, 7000); 
+
+                }, 500);
+            }
+        }
+    </script>
+</body>
+</html>
