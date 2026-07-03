@@ -73,6 +73,7 @@
         .ln-info { color: #00ff33; }
         .ln-warn { color: #ffaa00; font-weight: bold; }
         .ln-danger { color: #ff0033; font-weight: bold; text-shadow: 0 0 5px rgba(255,0,51,0.5); }
+        
         .virus-shaking {
             animation: extreme-shake 0.12s infinite alternate;
         }
@@ -93,7 +94,6 @@
             20% { opacity: 1; background: #ff0033; }
             40% { opacity: 0; }
             60% { opacity: 1; background: #fff; }
-            80% { opacity: 0; }
             100% { opacity: 1; background: #004b7e; }
         }
         .classic-shutdown {
@@ -158,37 +158,34 @@
             display: none;
             pointer-events: none;
         }
-        .frozen-glitch * {
-            animation-play-state: paused !important;
-            transition: none !important;
-        }
         
-        /* СТРАШНЫЙ ФИНАЛЬНЫЙ ЭКРАН */
-        .horror-screen {
+        /* Замораживаем только контент вращаемого слоя */
+        .frozen-content {
+            animation-play-state: paused !important;
+        }
+
+        /* ЖУТКИЙ ФИНАЛ */
+        .horror-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
-            z-index: 200;
+            background: #000000;
+            z-index: 999;
             display: none;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
         }
-        .horror-text {
+        .horror-msg {
             color: #ff0033;
-            font-size: 45px;
-            font-weight: bold;
-            letter-spacing: 5px;
-            text-shadow: 0 0 20px #ff0000;
-            opacity: 0;
+            font-size: 50px;
+            font-weight: 900;
+            letter-spacing: 8px;
             font-family: 'Courier New', Courier, monospace;
-            animation: textAppear 4s forwards ease-in-out;
+            text-shadow: 0 0 30px #ff0000;
+            animation: text-pulse 2s infinite alternate;
         }
-        @keyframes textAppear {
-            0% { opacity: 0; transform: scale(0.8); filter: blur(10px); }
-            40% { opacity: 1; filter: blur(0px); }
-            60% { transform: scale(1.05); }
-            100% { opacity: 1; transform: scale(1); }
+        @keyframes text-pulse {
+            0% { opacity: 0.3; transform: scale(0.95); filter: blur(2px); }
+            100% { opacity: 1; transform: scale(1); filter: blur(0px); }
         }
     </style>
 </head>
@@ -210,7 +207,7 @@
         </div>
 
         <div class="classic-shutdown" id="shutdownScreen">
-            <div class="dots-circle">
+            <div class="dots-circle" id="loaderCircle">
                 <div class="circle-dot"></div><div class="circle-dot"></div>
                 <div class="circle-dot"></div><div class="circle-dot"></div>
                 <div class="circle-dot"></div><div class="circle-dot"></div>
@@ -222,9 +219,9 @@
         </div>
     </div>
 
-    <!-- Контейнер для скримера/финала -->
-    <div class="horror-screen" id="horrorScreen">
-        <div class="horror-text">YOU CANNOT RUN</div>
+    <!-- Полностью изолированное окно финала поверх всего -->
+    <div class="horror-overlay" id="finalHorrorBox">
+        <div class="horror-msg">YOU CANNOT RUN</div>
     </div>
 
     <script>
@@ -234,67 +231,40 @@
         const shutdownScreen = document.getElementById('shutdownScreen');
         const flash = document.getElementById('flash');
         const artifacts = document.getElementById('artifacts');
-        const horrorScreen = document.getElementById('horrorScreen');
+        const finalBox = document.getElementById('finalHorrorBox');
+        const loaderCircle = document.getElementById('loaderCircle');
 
-        // ГЕНЕРАЦИЯ ЗВУКОВ БЕЗ ФАЙЛОВ (Через Web Audio API)
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        function playGlitchSound() {
-            // Звук системного сбоя / треска видеокарты
-            let osc = audioCtx.createOscillator();
-            let gain = audioCtx.createGain();
-            osc.type = Math.random() > 0.5 ? 'sawtooth' : 'square';
-            osc.frequency.setValueAtTime(Math.random() * 120 + 40, audioCtx.currentTime); // Низкий гул
-            osc.frequency.exponentialRampToValueAtTime(Math.random() * 800 + 200, audioCtx.currentTime + 0.15);
-            
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-            
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.15);
-        }
-
-        function playHorrorLaugh() {
-            // Синтез жуткого нисходящего смеха демонического вируса
-            for (let i = 0; i < 15; i++) {
-                setTimeout(() => {
-                    let osc = audioCtx.createOscillator();
-                    let gain = audioCtx.createGain();
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(140 - (i * 6), audioCtx.currentTime);
-                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.2);
-                }, i * 180);
+        // ИНИЦИАЛИЗАЦИЯ СИСТЕМНОГО ГОЛОСА WINDOWS (Text-To-Speech)
+        function saySystemWords(text, speed = 0.8, pitch = 0.3) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Сбрасываем старые очереди
+                const msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'en-US'; // На английском звучит максимально зловеще
+                msg.rate = speed;   // Замедляем темп для робо-эффекта
+                msg.pitch = pitch;  // Опускаем тон до замогильного
+                window.speechSynthesis.speak(msg);
             }
         }
 
         const attackSteps = [
-            { t: "[INFO] Инициализация скрытого дескриптора ядра...", type: 'ln-info' },
-            { t: "[OK] Обход подсистемы безопасности Windows Defender Pro Active...", type: 'ln-info' },
-            { t: "[WARN] Обнаружен перехватчик системных вызовов. Выполнение контр-инъекции...", type: 'ln-warn' },
-            { t: "[SUCCESS] Драйвер фильтра файловой системы отключен навсегда.", type: 'ln-info' },
+            { t: "[INFO] Инициализация скрытого дескриптора ядра...", type: 'ln-info', voice: "Alert. Core override initiated." },
+            { t: "[OK] Обход подсистемы безопасности Windows Defender...", type: 'ln-info' },
+            { t: "[WARN] Выполнение контр-инъекции в стек вызовов...", type: 'ln-warn' },
+            { t: "[SUCCESS] Драйвер фильтра файловой системы отключен.", type: 'ln-info' },
             { t: "[INFO] Поиск векторов монтирования дисков...", type: 'ln-info' },
-            { t: "[OK] Найдено: Диск C:\\ [NTFS], Диск D:\\ [NTFS].", type: 'ln-info' },
-            { t: "[WARN] Попытка блокировки ввода-вывода (Защита от записи)... Подавление...", type: 'ln-warn' },
-            { t: "[DANGER] ВНИМАНИЕ: Запущена деструктивная очистка секторов MFT/GUID...", type: 'ln-danger' },
+            { t: "[OK] Найдено: Диск C:\\ [NTFS], Диск D:\\ [NTFS].", type: 'ln-info', voice: "Hard drives compromised." },
+            { t: "[WARN] Попытка блокировки ввода-вывода... Подавление...", type: 'ln-warn' },
+            { t: "[DANGER] ВНИМАНИЕ: Запущена очистка секторов MFT/GUID...", type: 'ln-danger', voice: "Deleting partition tables." },
             { t: "[DANGER] Очистка кэша дескрипторов файлов... Успешно.", type: 'ln-danger' },
-            { t: "[INFO] Копирование токенов сессий и паролей браузеров во временный буфер...", type: 'ln-info' },
-            { t: "[OK] Пакет данных зашифрован и отправлен на удаленный узел.", type: 'ln-info' },
-            { t: "[WARN] Критическая ошибка шины SMBus! Датчики сообщают о перегрузке по току.", type: 'ln-warn' },
-            { t: "[DANGER] Сбой питания южного моста материнской платы (HW_VOLTAGE_FAULT).", type: 'ln-danger' },
-            { t: "[INFO] Принудительная отправка ACPI-запроса STATE_S5 ядра Windows...", type: 'ln-info' },
-            { t: "[DANGER] Вызов прямого прерывания процессора INT 19h (HALT)...", type: 'ln-danger' },
-            { t: "[CRITICAL SYSTEM FAILURE] Система завершает работу из-за повреждения железа.", type: 'ln-danger' }
+            { t: "[INFO] Данные токенов зашифрованы и отправлены в сеть.", type: 'ln-info' },
+            { t: "[WARN] Критическая ошибка шины SMBus! Перегрузка по току.", type: 'ln-warn', voice: "Hardware danger. Voltage failure." },
+            { t: "[DANGER] Сбой питания южного моста материнской платы.", type: 'ln-danger' },
+            { t: "[INFO] Принудительная отправка ACPI-запроса STATE_S5...", type: 'ln-info' },
+            { t: "[DANGER] Вызов прерывания процессора INT 19h (HALT)...", type: 'ln-danger', voice: "Fatal crash. Subsystem shutdown." },
+            { t: "[CRITICAL SYSTEM FAILURE] Система завершает работу.", type: 'ln-danger' }
         ];
 
         let currentStep = 0;
-        let glitchSoundInterval;
 
         function printLog() {
             if (currentStep < attackSteps.length) {
@@ -307,15 +277,17 @@
 
                 if (currentStep === 7) {
                     consoleWindow.classList.add('virus-shaking');
-                    // Начинаем спамить жуткими звуками глитчей каждые 250мс
-                    glitchSoundInterval = setInterval(playGlitchSound, 250);
+                }
+
+                // Если у шага прописан голос — заставляем Windows говорить
+                if (step.voice) {
+                    saySystemWords(step.voice);
                 }
 
                 currentStep++;
                 setTimeout(printLog, Math.random() * 900 + 700);
             } else {
                 flash.style.animation = "hardware-die-burst 0.5s forwards";
-                clearInterval(glitchSoundInterval); // Временная пауза звука для контраста
                 
                 setTimeout(() => {
                     document.getElementById('mainStage').style.display = 'none';
@@ -323,27 +295,23 @@
                     flash.style.opacity = '0';
                     shutdownScreen.style.display = 'flex';
                     
+                    // Windows медленно крутится 6 секунд
                     setTimeout(() => {
                         artifacts.style.display = 'block';
                         wrapper.style.transform = "rotate(43deg) scale(0.82)";
                         
-                        // Повторяющийся предсмертный писк зависшего железа
-                        let freezeBleep = setInterval(playGlitchSound, 80);
+                        // Замораживаем только точки, не ломая остальной JS
+                        loaderCircle.classList.add('frozen-content');
                         
+                        // Жуткий металлический голос сообщает об окончательном взломе
+                        saySystemWords("Goodbye. Your computer is mine.", 0.6, 0.1);
+                        
+                        // Спустя 4 секунды зависания под углом - врубаем финальный экран
                         setTimeout(() => {
-                            document.body.classList.add('frozen-glitch');
-                            wrapper.classList.add('frozen-glitch');
-                            clearInterval(freezeBleep); // Гасим писк железа перед полной тьмой
-                            
-                            // ЧЕРЕЗ 3 СЕКУНДЫ ЗАВИСАНИЯ - ПОЛНЫЙ МРАК И СЮРПРИЗ
-                            setTimeout(() => {
-                                wrapper.style.display = 'none';
-                                horrorScreen.style.display = 'flex';
-                                playHorrorLaugh(); // Запускаем жуткий смех вируса
-                            }, 3000);
+                            wrapper.style.display = 'none';
+                            finalBox.style.display = 'flex'; // Гарантированно открываем надпись
+                        }, 4000);
 
-                        }, 60);
-                        
                     }, 6000); 
 
                 }, 500);
