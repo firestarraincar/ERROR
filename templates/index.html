@@ -17,10 +17,9 @@
             background: #000;
             overflow: hidden;
             font-family: 'Courier New', monospace;
-            cursor: none;
+            cursor: default;
         }
 
-        /* ===== ПОЛНОЭКРАННЫЙ КОНТЕЙНЕР ===== */
         #container {
             width: 100vw;
             height: 100vh;
@@ -29,48 +28,57 @@
             overflow: hidden;
         }
 
-        /* ===== БЫСТРЫЙ КОД В НАЧАЛЕ ===== */
-        #fastCode {
+        /* ===== КНОПКА ERROR ПОД УГЛОМ ===== */
+        #errorBtn {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 5;
-            color: #00ff41;
-            font-size: 0.6rem;
-            line-height: 1.2;
-            white-space: pre-wrap;
-            word-break: break-all;
-            opacity: 0;
-            animation: fastCodeFlash 2s ease-out 0.3s forwards;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-12deg);
+            z-index: 50;
+            background: transparent;
+            border: 3px solid #ff0040;
+            color: #ff0040;
             font-family: 'Courier New', monospace;
-            background: #000;
-            padding: 20px;
-            overflow: hidden;
-            text-shadow: 0 0 5px #00ff4144;
+            font-size: 3.5rem;
+            font-weight: bold;
+            padding: 30px 60px;
+            cursor: pointer;
+            letter-spacing: 8px;
+            text-shadow: 0 0 30px #ff004066, 0 0 60px #ff004033;
+            box-shadow: 0 0 50px rgba(255, 0, 64, 0.2);
+            transition: all 0.3s;
+            animation: btnPulse 1.5s ease-in-out infinite;
+            text-transform: uppercase;
         }
 
-        @keyframes fastCodeFlash {
-            0% {
-                opacity: 0;
-                transform: scale(1.1);
+        #errorBtn:hover {
+            background: rgba(255, 0, 64, 0.2);
+            box-shadow: 0 0 80px rgba(255, 0, 64, 0.4);
+            transform: translate(-50%, -50%) rotate(-10deg) scale(1.05);
+        }
+
+        @keyframes btnPulse {
+            0%, 100% {
+                text-shadow: 0 0 30px #ff004066, 0 0 60px #ff004033;
+                box-shadow: 0 0 50px rgba(255, 0, 64, 0.2);
             }
-            5% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            95% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 0;
-                transform: scale(1.05);
+            50% {
+                text-shadow: 0 0 50px #ff004099, 0 0 100px #ff004055;
+                box-shadow: 0 0 80px rgba(255, 0, 64, 0.4);
             }
         }
 
-        /* ===== ЭФФЕКТ КРОВИ ПОД УГЛОМ ===== */
-        #bloodOverlay {
+        #errorBtn .sub {
+            display: block;
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            margin-top: 5px;
+            opacity: 0.5;
+            font-weight: normal;
+        }
+
+        /* ===== ГЛЮКИ ПОСЛЕ НАЖАТИЯ ===== */
+        #glitchLayer {
             position: absolute;
             top: 0;
             left: 0;
@@ -79,102 +87,57 @@
             z-index: 10;
             pointer-events: none;
             opacity: 0;
-            animation: bloodAppear 0.8s ease-out 2.2s forwards;
-            background: 
-                /* Кровь под углом - тёмные пятна */
-                radial-gradient(ellipse at 20% 80%, rgba(120, 0, 0, 0.7) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 20%, rgba(150, 0, 0, 0.6) 0%, transparent 40%),
-                radial-gradient(ellipse at 50% 50%, rgba(100, 0, 0, 0.3) 0%, transparent 70%),
-                /* Кровавые потеки */
-                repeating-linear-gradient(
-                    -45deg,
-                    transparent 0px,
-                    transparent 50px,
-                    rgba(80, 0, 0, 0.15) 50px,
-                    rgba(80, 0, 0, 0.15) 52px
-                ),
-                repeating-linear-gradient(
-                    45deg,
-                    transparent 0px,
-                    transparent 30px,
-                    rgba(60, 0, 0, 0.1) 30px,
-                    rgba(60, 0, 0, 0.1) 32px
-                );
-            transform: rotate(0deg);
+            transition: opacity 0.1s;
         }
 
-        @keyframes bloodAppear {
-            0% {
-                opacity: 0;
-                transform: scale(1.3) rotate(-5deg);
-            }
-            30% {
-                opacity: 1;
-                transform: scale(1) rotate(0deg);
-            }
-            100% {
-                opacity: 0.85;
-                transform: scale(1) rotate(0deg);
-            }
+        #glitchLayer.active {
+            opacity: 1;
         }
 
-        /* ===== КРОВАВЫЕ БРЫЗГИ ===== */
-        .blood-splat {
+        /* Строки глюков */
+        .glitch-line {
             position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(ellipse, rgba(180, 0, 0, 0.8), rgba(80, 0, 0, 0.2));
-            pointer-events: none;
-            z-index: 11;
+            color: #00ff41;
+            font-size: 0.6rem;
+            font-family: 'Courier New', monospace;
+            white-space: nowrap;
             opacity: 0;
-            animation: splatAppear 1s ease-out forwards;
+            pointer-events: none;
         }
 
-        .blood-splat:nth-child(1) {
-            width: 300px;
-            height: 200px;
-            top: 10%;
-            right: 5%;
-            transform: rotate(25deg);
-            animation-delay: 2.5s;
+        /* ===== СМАЗЫВАНИЕ ЭКРАНА ===== */
+        #motionBlur {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 15;
+            pointer-events: none;
+            opacity: 0;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent 0px,
+                    transparent 2px,
+                    rgba(0, 255, 65, 0.01) 2px,
+                    rgba(0, 255, 65, 0.01) 4px
+                );
+            transition: opacity 0.1s;
         }
 
-        .blood-splat:nth-child(2) {
-            width: 250px;
-            height: 350px;
-            bottom: 5%;
-            left: 10%;
-            transform: rotate(-15deg);
-            animation-delay: 2.8s;
-            background: radial-gradient(ellipse, rgba(200, 0, 0, 0.6), rgba(60, 0, 0, 0.1));
+        #motionBlur.active {
+            opacity: 0.8;
+            animation: blurShift 0.05s steps(2) infinite;
         }
 
-        .blood-splat:nth-child(3) {
-            width: 150px;
-            height: 150px;
-            top: 40%;
-            left: 60%;
-            transform: rotate(45deg);
-            animation-delay: 3.1s;
-            background: radial-gradient(ellipse, rgba(160, 0, 0, 0.7), rgba(40, 0, 0, 0.1));
+        @keyframes blurShift {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(5px, -3px) scale(1.02); }
         }
 
-        @keyframes splatAppear {
-            0% {
-                opacity: 0;
-                transform: scale(0.5) rotate(0deg);
-            }
-            50% {
-                opacity: 0.8;
-                transform: scale(1.2) rotate(10deg);
-            }
-            100% {
-                opacity: 0.6;
-                transform: scale(1) rotate(0deg);
-            }
-        }
-
-        /* ===== ОШИБКИ (красные, страшные) ===== */
-        #errorOverlay {
+        /* ===== СМАЗЫВАНИЕ (размытие) ===== */
+        #blurOverlay {
             position: absolute;
             top: 0;
             left: 0;
@@ -182,101 +145,19 @@
             height: 100%;
             z-index: 12;
             pointer-events: none;
-            opacity: 0;
-            animation: errorAppear 1.5s ease-out 2s forwards;
+            backdrop-filter: blur(0px);
+            transition: backdrop-filter 0.1s;
         }
 
-        .error-text {
-            position: absolute;
-            color: #ff0040;
-            font-size: 1.5rem;
-            font-weight: bold;
-            text-shadow: 0 0 30px #ff004088, 0 0 60px #ff004044;
-            font-family: 'Courier New', monospace;
-            letter-spacing: 3px;
-            opacity: 0;
-            animation: errorFlash 0.3s ease-out forwards;
-            text-transform: uppercase;
+        #blurOverlay.active {
+            backdrop-filter: blur(8px);
         }
 
-        .error-text:nth-child(1) {
-            top: 15%;
-            left: 10%;
-            font-size: 3rem;
-            animation-delay: 2.1s;
-            transform: rotate(-3deg);
+        #blurOverlay.heavy {
+            backdrop-filter: blur(20px);
         }
 
-        .error-text:nth-child(2) {
-            top: 50%;
-            right: 8%;
-            font-size: 2.5rem;
-            animation-delay: 2.4s;
-            transform: rotate(5deg);
-            color: #cc0033;
-        }
-
-        .error-text:nth-child(3) {
-            bottom: 20%;
-            left: 20%;
-            font-size: 2rem;
-            animation-delay: 2.7s;
-            transform: rotate(-7deg);
-            color: #ff0055;
-        }
-
-        .error-text:nth-child(4) {
-            top: 30%;
-            left: 50%;
-            font-size: 1.8rem;
-            animation-delay: 3.0s;
-            transform: rotate(2deg);
-            color: #990033;
-            text-shadow: 0 0 40px #99003388;
-        }
-
-        .error-text:nth-child(5) {
-            bottom: 40%;
-            right: 20%;
-            font-size: 2.2rem;
-            animation-delay: 3.3s;
-            transform: rotate(-4deg);
-            color: #ff0033;
-        }
-
-        @keyframes errorFlash {
-            0% {
-                opacity: 0;
-                transform: scale(0.8) rotate(0deg);
-                text-shadow: none;
-            }
-            20% {
-                opacity: 1;
-                transform: scale(1.3) rotate(3deg);
-                text-shadow: 0 0 50px #ff0040;
-            }
-            40% {
-                opacity: 0.3;
-                transform: scale(0.9) rotate(-2deg);
-            }
-            60% {
-                opacity: 1;
-                transform: scale(1.1) rotate(1deg);
-                text-shadow: 0 0 30px #ff004088;
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) rotate(0deg);
-                text-shadow: 0 0 20px #ff004066;
-            }
-        }
-
-        @keyframes errorAppear {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        /* ===== ЧЁРНЫЙ ЭКРАН ПОСЛЕ ВСЕГО ===== */
+        /* ===== ЧЁРНЫЙ ЭКРАН ===== */
         #blackScreen {
             position: absolute;
             top: 0;
@@ -284,73 +165,43 @@
             width: 100%;
             height: 100%;
             background: #000;
-            z-index: 20;
-            opacity: 0;
-            pointer-events: none;
-            animation: blackOut 0.5s ease-out 4s forwards;
-        }
-
-        @keyframes blackOut {
-            0% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 1;
-                pointer-events: all;
-            }
-        }
-
-        /* ===== ФИНАЛЬНЫЙ КОД ПОСЛЕ ЧЁРНОГО ЭКРАНА ===== */
-        #finalCode {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 25;
-            color: #00ff41;
-            font-size: 0.7rem;
-            line-height: 1.4;
-            white-space: pre-wrap;
-            word-break: break-all;
-            opacity: 0;
-            pointer-events: none;
-            animation: finalCodeAppear 0.5s ease-out 5s forwards;
-            font-family: 'Courier New', monospace;
-            padding: 20px;
-            background: #000;
-            overflow: hidden;
-            text-shadow: 0 0 5px #00ff4122;
-        }
-
-        @keyframes finalCodeAppear {
-            0% {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            100% {
-                opacity: 0.6;
-                transform: scale(1);
-            }
-        }
-
-        /* ===== МЕРЦАЮЩИЙ КУРСОР В КОНЦЕ ===== */
-        #cursor {
-            position: absolute;
-            bottom: 30px;
-            left: 30px;
             z-index: 30;
-            color: #00ff41;
-            font-size: 1.2rem;
             opacity: 0;
-            animation: cursorAppear 0.5s ease-out 6s forwards;
-            font-family: 'Courier New', monospace;
-            letter-spacing: 2px;
+            pointer-events: none;
+            transition: opacity 0.5s;
         }
 
-        #cursor .blink {
+        #blackScreen.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* ===== ТЕКСТ НА ЧЁРНОМ ЭКРАНЕ ===== */
+        #blackText {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 35;
+            color: #00ff41;
+            font-size: 1.5rem;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+            text-shadow: 0 0 30px #00ff4144;
+            letter-spacing: 3px;
+        }
+
+        #blackText.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        #blackText .blink {
             display: inline-block;
-            width: 12px;
+            width: 10px;
             height: 1.2em;
             background: #00ff41;
             animation: blink 0.8s infinite;
@@ -358,12 +209,19 @@
             margin-left: 5px;
         }
 
-        @keyframes cursorAppear {
-            0% { opacity: 0; }
-            100% { opacity: 0.7; }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
         }
 
-        /* ===== СТРАШНЫЙ ШУМ ===== */
+        #blackText .small {
+            font-size: 0.7rem;
+            color: #00ff4166;
+            margin-top: 20px;
+            letter-spacing: 2px;
+        }
+
+        /* ===== ШУМ ===== */
         #noise {
             position: absolute;
             top: 0;
@@ -371,65 +229,61 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 1;
+            z-index: 2;
             background: repeating-linear-gradient(
                 0deg,
                 transparent 0px,
                 transparent 1px,
-                rgba(255, 0, 0, 0.02) 1px,
-                rgba(255, 0, 0, 0.02) 2px
+                rgba(0, 255, 65, 0.015) 1px,
+                rgba(0, 255, 65, 0.015) 2px
             );
             animation: noiseMove 0.03s steps(3) infinite;
-            opacity: 0.5;
+            opacity: 0.3;
         }
 
         @keyframes noiseMove {
             0% { transform: translate(0, 0); }
-            100% { transform: translate(-3px, 3px); }
+            100% { transform: translate(-2px, 2px); }
         }
 
-        /* ===== БЫСТРОЕ МЕРЦАНИЕ ЭКРАНА ===== */
-        #flicker {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 3;
-            pointer-events: none;
-            background: #000;
-            opacity: 0;
-            animation: flickerEffect 2s ease-out 1.5s forwards;
+        /* ===== АНИМАЦИЯ ИСЧЕЗНОВЕНИЯ КНОПКИ ===== */
+        #errorBtn.hidden {
+            animation: btnDisappear 0.8s ease-out forwards;
         }
 
-        @keyframes flickerEffect {
-            0% { opacity: 0; }
-            5% { opacity: 0.9; }
-            10% { opacity: 0; }
-            15% { opacity: 0.8; }
-            20% { opacity: 0; }
-            25% { opacity: 1; }
-            30% { opacity: 0; }
-            100% { opacity: 0; }
+        @keyframes btnDisappear {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) rotate(-12deg) scale(1);
+            }
+            30% {
+                opacity: 1;
+                transform: translate(-50%, -50%) rotate(-8deg) scale(1.3);
+                box-shadow: 0 0 100px rgba(255, 0, 64, 0.8);
+            }
+            60% {
+                opacity: 0.5;
+                transform: translate(-50%, -50%) rotate(-15deg) scale(0.8);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) rotate(-20deg) scale(0);
+            }
         }
 
         /* ===== АДАПТАЦИЯ ===== */
         @media (max-width: 600px) {
-            .error-text {
-                font-size: 1rem !important;
+            #errorBtn {
+                font-size: 1.8rem;
+                padding: 20px 30px;
+                letter-spacing: 4px;
             }
-            .error-text:nth-child(1) { font-size: 1.5rem !important; }
-            .error-text:nth-child(2) { font-size: 1.2rem !important; }
-            #fastCode {
-                font-size: 0.4rem;
-                padding: 10px;
+            #errorBtn .sub {
+                font-size: 0.6rem;
             }
-            #finalCode {
-                font-size: 0.5rem;
-                padding: 10px;
-            }
-            .blood-splat {
-                display: none;
+            #blackText {
+                font-size: 1rem;
+                padding: 20px;
             }
         }
     </style>
@@ -441,203 +295,209 @@
     <!-- ШУМ -->
     <div id="noise"></div>
 
-    <!-- МЕРЦАНИЕ -->
-    <div id="flicker"></div>
+    <!-- ===== КНОПКА ERROR ПОД УГЛОМ ===== -->
+    <button id="errorBtn">
+        ⚠️ ERROR
+        <span class="sub">▶ PRESS TO BREACH ◀</span>
+    </button>
 
-    <!-- ===== БЫСТРЫЙ КОД (в начале) ===== -->
-    <div id="fastCode" id="fastCode"></div>
+    <!-- ===== СЛОЙ ГЛЮКОВ ===== -->
+    <div id="glitchLayer"></div>
 
-    <!-- ===== КРОВЬ ПОД УГЛОМ ===== -->
-    <div id="bloodOverlay"></div>
-
-    <!-- ===== КРОВАВЫЕ БРЫЗГИ ===== -->
-    <div class="blood-splat"></div>
-    <div class="blood-splat"></div>
-    <div class="blood-splat"></div>
-
-    <!-- ===== СТРАШНЫЕ ОШИБКИ ===== -->
-    <div id="errorOverlay">
-        <div class="error-text">⚠️ SYSTEM FAILURE ⚠️</div>
-        <div class="error-text">💀 CRITICAL ERROR 💀</div>
-        <div class="error-text">🔥 DATA CORRUPTED 🔥</div>
-        <div class="error-text">⚡ MEMORY DUMP ⚡</div>
-        <div class="error-text">❌ ACCESS DENIED ❌</div>
-    </div>
+    <!-- ===== СМАЗЫВАНИЕ ===== -->
+    <div id="motionBlur"></div>
+    <div id="blurOverlay"></div>
 
     <!-- ===== ЧЁРНЫЙ ЭКРАН ===== -->
     <div id="blackScreen"></div>
 
-    <!-- ===== ФИНАЛЬНЫЙ КОД ===== -->
-    <div id="finalCode"></div>
-
-    <!-- ===== КУРСОР ===== -->
-    <div id="cursor">
-        <span style="color: #ff0040;">▶</span> SYSTEM RECOVERED <span class="blink"></span>
+    <!-- ===== ТЕКСТ НА ЧЁРНОМ ЭКРАНЕ ===== -->
+    <div id="blackText">
+        <div style="font-size: 2rem; color: #ff0040; margin-bottom: 20px;">⚠️ SYSTEM OFFLINE ⚠️</div>
+        <div>CONNECTION LOST</div>
+        <div style="font-size: 0.8rem; margin-top: 10px; color: #00ff4166;">
+            ATTEMPTING TO RECONNECT<span class="blink"></span>
+        </div>
+        <div class="small">
+            <span style="color: #ff0040;">▶</span> DATA CORRUPTED
+        </div>
+        <div class="small" style="margin-top: 5px; color: #ff004066;">
+            ERROR CODE: 0xDEADBEEF
+        </div>
     </div>
 
 </div>
 
 <script>
-    // ===== ГЕНЕРАЦИЯ БЫСТРОГО КОДА =====
-    (function generateFastCode() {
-        const el = document.getElementById('fastCode');
-        const lines = [];
-        const strings = [
-            'ERROR: 0xDEADBEEF', 'SEGFAULT', 'KERNEL PANIC', 'DATA LOSS',
-            'MEMORY CORRUPTION', 'STACK OVERFLOW', 'HEAP CORRUPTION',
-            'INVALID POINTER', 'ACCESS VIOLATION', 'SYSTEM CRASH',
-            'FATAL EXCEPTION', 'UNHANDLED INTERRUPT', 'DMA FAILURE',
-            'PCIe ERROR', 'BIOS CORRUPT', 'BOOT FAILURE', 'DISK ERROR',
-            'FS CORRUPTION', 'INODE LOST', 'JOURNAL ERROR'
+    // ===== ГЕНЕРАЦИЯ ГЛЮКОВ =====
+    function generateGlitches() {
+        const layer = document.getElementById('glitchLayer');
+        const glitchTexts = [
+            'ERROR', 'SEGFAULT', 'KERNEL PANIC', 'DATA LOSS',
+            'MEMORY CORRUPT', 'STACK OVERFLOW', 'HEAP CORRUPT',
+            'ACCESS VIOLATION', 'SYSTEM CRASH', 'FATAL EXCEPTION',
+            'UNHANDLED INTERRUPT', 'DMA FAILURE', 'PCIe ERROR',
+            'BIOS CORRUPT', 'BOOT FAILURE', 'DISK ERROR',
+            'FS CORRUPTION', 'INODE LOST', 'JOURNAL ERROR',
+            '0xDEADBEEF', '0xCAFEBABE', '0xBAADF00D'
         ];
 
-        // Генерируем 50-70 строк быстрого кода
-        for (let i = 0; i < 80; i++) {
-            const randomHex = Math.random().toString(16).substring(2, 10).toUpperCase();
-            const randomString = strings[Math.floor(Math.random() * strings.length)];
-            const randomNum = Math.floor(Math.random() * 9999);
-            const prefix = ['[ERR]', '[WARN]', '[FATAL]', '[CRIT]', '[PANIC]'][Math.floor(Math.random() * 5)];
-            const color = ['#ff0040', '#ff4400', '#ff0044', '#cc0033'][Math.floor(Math.random() * 4)];
-            lines.push(`<span style="color:${color}">${prefix}</span> ${randomString} 0x${randomHex} at ${randomNum}\n`);
+        for (let i = 0; i < 30; i++) {
+            const line = document.createElement('div');
+            line.className = 'glitch-line';
+            line.textContent = glitchTexts[Math.floor(Math.random() * glitchTexts.length)];
+            line.style.left = Math.random() * 90 + '%';
+            line.style.top = Math.random() * 90 + '%';
+            line.style.fontSize = (0.4 + Math.random() * 1.2) + 'rem';
+            line.style.color = ['#ff0040', '#00ff41', '#ffcc00', '#ff00ff', '#00ffff'][Math.floor(Math.random() * 5)];
+            line.style.opacity = 0.2 + Math.random() * 0.8;
+            line.style.transform = `rotate(${(Math.random() - 0.5) * 10}deg)`;
+            line.style.textShadow = `0 0 ${10 + Math.random() * 30}px currentColor`;
+            layer.appendChild(line);
         }
+    }
 
-        el.innerHTML = lines.join('').repeat(2);
-    })();
-
-    // ===== ГЕНЕРАЦИЯ ФИНАЛЬНОГО КОДА =====
-    (function generateFinalCode() {
-        const el = document.getElementById('finalCode');
-        const lines = [];
-        const hexBytes = ['0x00', '0xFF', '0x3F', '0xAA', '0x55', '0xCC', '0x33', '0x99', '0x66', '0x11'];
-
-        for (let i = 0; i < 200; i++) {
-            const hex = hexBytes[Math.floor(Math.random() * hexBytes.length)];
-            const num = Math.floor(Math.random() * 255);
-            const hexStr = num.toString(16).toUpperCase().padStart(2, '0');
-            const prefix = ['DB', 'DW', 'DD', 'DQ'][Math.floor(Math.random() * 4)];
-            const label = `L${Math.floor(Math.random() * 9999)}`;
-            const ascii = String.fromCharCode(32 + Math.random() * 95);
-            lines.push(`${label}: ${prefix} 0x${hexStr} ${hex} ; '${ascii}'`);
-        }
-
-        // Добавляем ассемблерный код
-        const asm = [
-            'mov eax, 0xDEADBEEF',
-            'xor ebx, ebx',
-            'push eax',
-            'call 0x7FFF8A3B',
-            'pop eax',
-            'jmp 0x0000FFFF',
-            'ret',
-            'nop',
-            'int 0x80',
-            'syscall'
-        ];
-
-        for (let i = 0; i < 20; i++) {
-            const instr = asm[Math.floor(Math.random() * asm.length)];
-            const addr = `0x${Math.floor(Math.random() * 0xFFFF).toString(16).toUpperCase().padStart(4, '0')}`;
-            lines.push(`[${addr}] ${instr}`);
-        }
-
-        // Добавляем шестнадцатеричный дамп
-        for (let i = 0; i < 50; i++) {
-            let hexLine = '';
-            for (let j = 0; j < 16; j++) {
-                hexLine += Math.floor(Math.random() * 255).toString(16).toUpperCase().padStart(2, '0') + ' ';
-            }
-            const addr = `0x${(i * 16).toString(16).toUpperCase().padStart(8, '0')}`;
-            lines.push(`${addr}: ${hexLine}`);
-        }
-
-        el.textContent = lines.join('\n');
-    })();
-
-    // ===== ЭФФЕКТ МЕРЦАНИЯ И ГЛИТЧА =====
-    (function glitchEffects() {
+    // ===== ГЛЮК-ЭФФЕКТЫ (постоянные) =====
+    function startGlitchEffects() {
         const container = document.getElementById('container');
+        const glitchLayer = document.getElementById('glitchLayer');
+        const motionBlur = document.getElementById('motionBlur');
+        const blurOverlay = document.getElementById('blurOverlay');
+        const blackScreen = document.getElementById('blackScreen');
+        const blackText = document.getElementById('blackText');
 
-        // Случайные вспышки в процессе
-        setInterval(() => {
-            if (Math.random() < 0.08) {
-                container.style.filter = `brightness(${0.5 + Math.random() * 1.5}) contrast(${0.8 + Math.random() * 0.4})`;
+        // Активируем слои
+        glitchLayer.classList.add('active');
+        motionBlur.classList.add('active');
+        blurOverlay.classList.add('active');
+
+        // Перемещение строк глюков
+        const glitchLines = document.querySelectorAll('.glitch-line');
+        let glitchInterval = setInterval(() => {
+            glitchLines.forEach(line => {
+                if (Math.random() < 0.3) {
+                    line.style.left = (Math.random() * 90) + '%';
+                    line.style.top = (Math.random() * 90) + '%';
+                    line.style.opacity = 0.2 + Math.random() * 0.8;
+                    line.style.transform = `rotate(${(Math.random() - 0.5) * 15}deg) scale(${0.8 + Math.random() * 0.4})`;
+                }
+                if (Math.random() < 0.1) {
+                    line.style.color = ['#ff0040', '#00ff41', '#ffcc00', '#ff00ff', '#00ffff'][Math.floor(Math.random() * 5)];
+                }
+            });
+        }, 200);
+
+        // Смазывание экрана (сдвиг)
+        let blurInterval = setInterval(() => {
+            if (Math.random() < 0.4) {
+                const shiftX = (Math.random() - 0.5) * 20;
+                const shiftY = (Math.random() - 0.5) * 20;
+                motionBlur.style.transform = `translate(${shiftX}px, ${shiftY}px) scale(${1 + (Math.random() - 0.5) * 0.05})`;
+            }
+            if (Math.random() < 0.2) {
+                blurOverlay.classList.toggle('heavy');
+            }
+            if (Math.random() < 0.05) {
+                container.style.filter = `brightness(${0.3 + Math.random() * 0.7})`;
+                setTimeout(() => { container.style.filter = 'none'; }, 100);
+            }
+        }, 100);
+
+        // Через 5-7 секунд — ЧЁРНЫЙ ЭКРАН
+        const blackDelay = 5000 + Math.random() * 3000;
+        setTimeout(() => {
+            // Останавливаем глюки
+            clearInterval(glitchInterval);
+            clearInterval(blurInterval);
+
+            // Плавно убираем глюки
+            glitchLayer.style.transition = 'opacity 0.5s';
+            glitchLayer.style.opacity = '0';
+            motionBlur.style.transition = 'opacity 0.5s';
+            motionBlur.style.opacity = '0';
+            blurOverlay.style.transition = 'backdrop-filter 0.5s';
+            blurOverlay.classList.remove('active');
+
+            // Чёрный экран
+            setTimeout(() => {
+                blackScreen.classList.add('active');
                 setTimeout(() => {
-                    container.style.filter = 'none';
-                }, 150);
-            }
-        }, 500);
+                    blackText.classList.add('active');
+                }, 500);
+            }, 500);
 
-        // Красные вспышки
-        setInterval(() => {
-            if (Math.random() < 0.03) {
-                const flash = document.createElement('div');
-                flash.style.cssText = `
-                    position: absolute;
-                    top: 0; left: 0;
-                    width: 100%; height: 100%;
-                    background: rgba(255, 0, 0, 0.3);
-                    z-index: 15;
-                    pointer-events: none;
-                `;
-                container.appendChild(flash);
-                setTimeout(() => flash.remove(), 100);
-            }
-        }, 1000);
-    })();
+        }, blackDelay);
 
-    // ===== ЗВУКОВОЙ ЭФФЕКТ (страшный гул) =====
-    (function playHorrorSound() {
+        // Сохраняем интервалы для очистки
+        window._glitchIntervals = [glitchInterval, blurInterval];
+    }
+
+    // ===== ОБРАБОТЧИК КНОПКИ =====
+    document.getElementById('errorBtn').addEventListener('click', function() {
+        // Скрываем кнопку с анимацией
+        this.classList.add('hidden');
+
+        // Генерируем глюки
+        generateGlitches();
+
+        // Запускаем эффекты через небольшую задержку
+        setTimeout(() => {
+            startGlitchEffects();
+        }, 800);
+    });
+
+    // ===== ЗВУКОВОЙ ЭФФЕКТ =====
+    function playGlitchSound() {
         try {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-            // Низкий гул
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            oscillator.type = 'sawtooth';
-            oscillator.frequency.setValueAtTime(55, audioCtx.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 2);
-            gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2);
-            oscillator.start(audioCtx.currentTime + 1);
-            oscillator.stop(audioCtx.currentTime + 3);
-
-            // Высокий шум (как помеха)
-            const noise = audioCtx.createBufferSource();
-            const bufferSize = audioCtx.sampleRate * 2;
+            // Шум
+            const bufferSize = audioCtx.sampleRate * 0.5;
             const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
             const data = buffer.getChannelData(0);
             for (let i = 0; i < bufferSize; i++) {
                 data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
             }
+            const noise = audioCtx.createBufferSource();
             noise.buffer = buffer;
-            const noiseGain = audioCtx.createGain();
-            noise.connect(noiseGain);
-            noiseGain.connect(audioCtx.destination);
-            noiseGain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-            noiseGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2);
-            noise.start(audioCtx.currentTime + 0.5);
-            noise.stop(audioCtx.currentTime + 2.5);
+            const gainNode = audioCtx.createGain();
+            noise.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
+            noise.start(audioCtx.currentTime);
+            noise.stop(audioCtx.currentTime + 1);
+
+            // Гул
+            const osc = audioCtx.createOscillator();
+            const oscGain = audioCtx.createGain();
+            osc.connect(oscGain);
+            oscGain.connect(audioCtx.destination);
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(80, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 1);
+            oscGain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            oscGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
+            osc.start(audioCtx.currentTime + 0.1);
+            osc.stop(audioCtx.currentTime + 1.1);
 
         } catch(e) { /* тихо */ }
-    })();
+    }
 
-    // ===== СТРАШНЫЙ ТЕКСТ В КОНСОЛИ =====
-    console.log('%c⚠️ SYSTEM CORRUPTED ⚠️', 'color: #ff0040; font-size: 40px; font-weight: bold;');
-    console.log('%cYOU SHOULD NOT BE HERE', 'color: #ff0040; font-size: 20px;');
-    console.log('%cDATA LOSS DETECTED', 'color: #ff0040; font-size: 16px;');
+    // Воспроизводим звук при нажатии
+    document.getElementById('errorBtn').addEventListener('click', () => {
+        setTimeout(playGlitchSound, 200);
+    });
 
-    // ===== ПРОСЬБА ВКЛЮЧИТЬ ПОЛНОЭКРАННЫЙ РЕЖИМ =====
+    // ===== АВТОМАТИЧЕСКИЙ ПОЛНОЭКРАННЫЙ РЕЖИМ =====
     document.addEventListener('click', () => {
         if (document.fullscreenElement) return;
         document.documentElement.requestFullscreen?.().catch(() => {});
     });
 
-    // Автоматический полноэкранный режим при загрузке
-    setTimeout(() => {
-        document.documentElement.requestFullscreen?.().catch(() => {});
-    }, 1000);
+    // ===== СТРАШНАЯ КОНСОЛЬ =====
+    console.log('%c⚠️ SYSTEM CORRUPTED ⚠️', 'color: #ff0040; font-size: 40px; font-weight: bold;');
+    console.log('%cPRESS THE ERROR BUTTON... IF YOU DARE', 'color: #ff0040; font-size: 20px;');
 </script>
 
 </body>
