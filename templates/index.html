@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYSTEM FATAL EXPLOIT</title>
+    <title>⚡ SYSTEM TERMINATION IN PROGRESS</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-
         body, html {
             width: 100%;
             height: 100%;
@@ -18,18 +17,22 @@
             background-color: #000000;
             font-family: monospace;
         }
-
-        /* Главный контейнер, который мы целиком повернем в конце */
         #viewport-wrapper {
             width: 100%;
             height: 100%;
             position: relative;
             background-color: #020202;
-            transition: transform 0.4s cubic-bezier(0.1, 0.8, 0.3, 1);
+            transition: transform 0.6s cubic-bezier(0.15, 0.85, 0.3, 1.2);
             transform-origin: center center;
         }
-
-        /* Зона взлома */
+        .glitch-scanlines {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 6px 100%;
+            z-index: 20;
+            pointer-events: none;
+        }
         .stage {
             position: absolute;
             width: 100%;
@@ -39,71 +42,63 @@
             align-items: center;
             z-index: 5;
         }
-
-        /* Консоль */
         .hacker-console {
-            width: 90%;
-            max-width: 820px;
-            height: 520px;
-            background: rgba(0, 0, 0, 0.96);
+            width: 92%;
+            max-width: 850px;
+            height: 550px;
+            background: rgba(3, 3, 3, 0.98);
             border: 1px solid #00ff33;
-            box-shadow: 0 0 35px rgba(0, 255, 51, 0.15);
+            box-shadow: 0 0 40px rgba(0, 255, 51, 0.1);
             display: flex;
             flex-direction: column;
         }
-
         .console-header {
-            background: #080808;
-            padding: 12px 15px;
+            background: #050505;
+            padding: 12px 18px;
             border-bottom: 1px solid #00ff33;
             color: #00ff33;
             display: flex;
             justify-content: space-between;
             font-size: 13px;
+            letter-spacing: 1px;
         }
-
         .console-body {
-            padding: 20px;
+            padding: 22px;
             color: #00ff33;
             font-size: 13px;
-            line-height: 1.6;
+            line-height: 1.7;
             overflow-y: auto;
             flex-grow: 1;
         }
-
-        /* Цвета логов */
         .ln-info { color: #00ff33; }
-        .ln-warn { color: #ffcc00; }
-        .ln-danger { color: #ff0033; font-weight: bold; }
-        
-        /* Жесткая тряска экрана */
-        .virus-glitch {
-            animation: screen-shake 0.1s infinite alternate;
+        .ln-warn { color: #ffaa00; font-weight: bold; }
+        .ln-danger { color: #ff0033; font-weight: bold; text-shadow: 0 0 5px rgba(255,0,51,0.5); }
+        .virus-shaking {
+            animation: extreme-shake 0.12s infinite alternate;
         }
-
-        @keyframes screen-shake {
-            0% { transform: translate(2px, 1px) rotate(0deg); filter: contrast(120%); }
-            100% { transform: translate(-2px, -1px) rotate(0.2deg); filter: contrast(150%) hue-rotate(10deg); }
+        @keyframes extreme-shake {
+            0% { transform: translate(3px, 2px) skewX(-1deg); filter: hue-rotate(0deg) contrast(140%); }
+            100% { transform: translate(-3px, -2px) skewX(1deg); filter: hue-rotate(90deg) contrast(180%); }
         }
-
-        /* Аппаратная вспышка */
-        .hardware-dead {
+        .hardware-flash {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background: #fff;
             z-index: 99;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.08s ease;
         }
-
-        /* Экран выключения */
+        @keyframes hardware-die-burst {
+            0% { opacity: 0; }
+            20% { opacity: 1; background: #ff0033; }
+            40% { opacity: 0; }
+            60% { opacity: 1; background: #fff; }
+            80% { opacity: 0; }
+            100% { opacity: 1; background: #004b7e; }
+        }
         .classic-shutdown {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background-color: #004b7e;
             z-index: 100;
             display: none;
@@ -115,53 +110,54 @@
             cursor: none;
             user-select: none;
         }
-
-        /* Круг из 12 точек */
         .dots-circle {
             position: relative;
-            width: 60px;
-            height: 60px;
-            margin-bottom: 30px;
+            width: 65px;
+            height: 65px;
+            margin-bottom: 35px;
         }
-
         .circle-dot {
             position: absolute;
             width: 6px;
             height: 6px;
             background: #ffffff;
             border-radius: 50%;
-            top: 0; left: 27px;
-            transform-origin: 3px 30px;
+            top: 0; left: 29px;
+            transform-origin: 3px 32px;
             opacity: 0;
-            animation: slow-fade-orbit 2.4s infinite linear;
+            animation: slow-fade-orbit 2.6s infinite linear;
         }
-
         .circle-dot:nth-child(1) { transform: rotate(0deg); animation-delay: 0s; }
-        .circle-dot:nth-child(2) { transform: rotate(30deg); animation-delay: 0.2s; }
-        .circle-dot:nth-child(3) { transform: rotate(60deg); animation-delay: 0.4s; }
-        .circle-dot:nth-child(4) { transform: rotate(90deg); animation-delay: 0.6s; }
-        .circle-dot:nth-child(5) { transform: rotate(120deg); animation-delay: 0.8s; }
-        .circle-dot:nth-child(6) { transform: rotate(150deg); animation-delay: 1.0s; }
-        .circle-dot:nth-child(7) { transform: rotate(180deg); animation-delay: 1.2s; }
-        .circle-dot:nth-child(8) { transform: rotate(210deg); animation-delay: 1.4s; }
-        .circle-dot:nth-child(9) { transform: rotate(240deg); animation-delay: 1.6s; }
-        .circle-dot:nth-child(10) { transform: rotate(270deg); animation-delay: 1.8s; }
-        .circle-dot:nth-child(11) { transform: rotate(300deg); animation-delay: 2.0s; }
-        .circle-dot:nth-child(12) { transform: rotate(330deg); animation-delay: 2.2s; }
-
+        .circle-dot:nth-child(2) { transform: rotate(30deg); animation-delay: 0.21s; }
+        .circle-dot:nth-child(3) { transform: rotate(60deg); animation-delay: 0.42s; }
+        .circle-dot:nth-child(4) { transform: rotate(90deg); animation-delay: 0.63s; }
+        .circle-dot:nth-child(5) { transform: rotate(120deg); animation-delay: 0.84s; }
+        .circle-dot:nth-child(6) { transform: rotate(150deg); animation-delay: 1.05s; }
+        .circle-dot:nth-child(7) { transform: rotate(180deg); animation-delay: 1.26s; }
+        .circle-dot:nth-child(8) { transform: rotate(210deg); animation-delay: 1.47s; }
+        .circle-dot:nth-child(9) { transform: rotate(240deg); animation-delay: 1.68s; }
+        .circle-dot:nth-child(10) { transform: rotate(270deg); animation-delay: 1.89s; }
+        .circle-dot:nth-child(11) { transform: rotate(300deg); animation-delay: 2.1s; }
+        .circle-dot:nth-child(12) { transform: rotate(330deg); animation-delay: 2.31s; }
         @keyframes slow-fade-orbit {
             0% { opacity: 1; }
-            50% { opacity: 0.15; }
+            50% { opacity: 0.1; }
             100% { opacity: 1; }
         }
-
         .shutdown-label {
-            font-size: 22px;
+            font-size: 23px;
             font-weight: 300;
             letter-spacing: 0.5px;
         }
-
-        /* Класс для полной остановки анимаций при зависании */
+        .gpu-artifacts {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255, 0, 85, 0.4) 40px, rgba(255, 0, 85, 0.4) 43px),
+                        repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(0, 255, 100, 0.3) 60px, rgba(0, 255, 100, 0.3) 62px);
+            z-index: 150;
+            display: none;
+            pointer-events: none;
+        }
         .frozen-glitch * {
             animation-play-state: paused !important;
             transition: none !important;
@@ -169,23 +165,24 @@
     </style>
 </head>
 <body>
+    <div class="glitch-scanlines"></div>
 
-    <!-- Вся картинка внутри этого вращаемого слоя, а под ним — чистый черный фон body -->
     <div id="viewport-wrapper">
-        <div class="hardware-dead" id="flash"></div>
+        <div class="hardware-flash" id="flash"></div>
+        <div class="gpu-artifacts" id="artifacts"></div>
 
         <div class="stage" id="mainStage">
             <div class="hacker-console" id="consoleWindow">
                 <div class="console-header">
-                    <span>☠️ ROOT_KERNEL_ATTACK.SH</span>
-                    <span>STATUS: INJECTING</span>
+                    <span>☠️ CVE_2026_OVERCLOCK_FALLBACK.SH</span>
+                    <span>THREAT_LEVEL: MAXIMUM</span>
                 </div>
                 <div class="console-body" id="logs"></div>
             </div>
         </div>
 
         <div class="classic-shutdown" id="shutdownScreen">
-            <div class="dots-circle" id="loaderCircle">
+            <div class="dots-circle">
                 <div class="circle-dot"></div><div class="circle-dot"></div>
                 <div class="circle-dot"></div><div class="circle-dot"></div>
                 <div class="circle-dot"></div><div class="circle-dot"></div>
@@ -203,22 +200,25 @@
         const consoleWindow = document.getElementById('consoleWindow');
         const shutdownScreen = document.getElementById('shutdownScreen');
         const flash = document.getElementById('flash');
+        const artifacts = document.getElementById('artifacts');
 
         const attackSteps = [
-            { t: "[INFO] Подключение к шине PCI Express...", type: 'ln-info' },
-            { t: "[OK] Поиск уязвимостей в драйвере дисплея...", type: 'ln-info' },
-            { t: "[WARN] Обнаружен процесс ядра Antivirus. Ожидание сигнатуры...", type: 'ln-warn' },
-            { t: "[SUCCESS] Защита ядра Ring-0 скомпрометирована.", type: 'ln-info' },
-            { t: "[INFO] Чтение дампа дескрипторов памяти lsass.exe...", type: 'ln-info' },
-            { t: "[OK] Ключи шифрования SAM извлечены.", type: 'ln-info' },
-            { t: "[WARN] Попытка системы восстановить стек вызовов...", type: 'ln-warn' },
-            { t: "[DANGER] БЛОКИРОВКА: Начат деструктивный обход MBR/GPT...", type: 'ln-danger' },
-            { t: "[DANGER] Перезапись секторов хранения данных: 12%.. 44%.. 89%..", type: 'ln-danger' },
-            { t: "[OK] Таблица разделов уничтожена.", type: 'ln-info' },
-            { t: "[WARN] Перегрев кристалла процессора! Текущая: 94°C", type: 'ln-warn' },
-            { t: "[INFO] Принудительная отправка ACPI-пакета S5 (Shutdown)...", type: 'ln-info' },
-            { t: "[DANGER] Аппаратное прерывание BIOS INT 15h вызвано.", type: 'ln-danger' },
-            { t: "[CRITICAL] Потеря контроля питания материнской платы.", type: 'ln-danger' }
+            { t: "[INFO] Инициализация скрытого дескриптора ядра...", type: 'ln-info' },
+            { t: "[OK] Обход подсистемы безопасности Windows Defender Pro Active...", type: 'ln-info' },
+            { t: "[WARN] Обнаружен перехватчик системных вызовов. Выполнение контр-инъекции...", type: 'ln-warn' },
+            { t: "[SUCCESS] Драйвер фильтра файловой системы отключен навсегда.", type: 'ln-info' },
+            { t: "[INFO] Поиск векторов монтирования дисков...", type: 'ln-info' },
+            { t: "[OK] Найдено: Диск C:\\ [NTFS], Диск D:\\ [NTFS].", type: 'ln-info' },
+            { t: "[WARN] Попытка блокировки ввода-вывода (Защита от записи)... Подавление...", type: 'ln-warn' },
+            { t: "[DANGER] ВНИМАНИЕ: Запущена деструктивная очистка секторов MFT/GUID...", type: 'ln-danger' },
+            { t: "[DANGER] Очистка кэша дескрипторов файлов... Успешно.", type: 'ln-danger' },
+            { t: "[INFO] Копирование токенов сессий и паролей браузеров во временный буфер...", type: 'ln-info' },
+            { t: "[OK] Пакет данных зашифрован и отправлен на удаленный узел.", type: 'ln-info' },
+            { t: "[WARN] Критическая ошибка шины SMBus! Датчики сообщают о перегрузке по току.", type: 'ln-warn' },
+            { t: "[DANGER] Сбой питания южного моста материнской платы (HW_VOLTAGE_FAULT).", type: 'ln-danger' },
+            { t: "[INFO] Принудительная отправка ACPI-запроса STATE_S5 ядра Windows...", type: 'ln-info' },
+            { t: "[DANGER] Вызов прямого прерывания процессора INT 19h (HALT)...", type: 'ln-danger' },
+            { t: "[CRITICAL SYSTEM FAILURE] Система завершает работу из-за повреждения железа.", type: 'ln-danger' }
         ];
 
         let currentStep = 0;
@@ -233,34 +233,36 @@
                 logsContainer.scrollTop = logsContainer.scrollHeight;
 
                 if (currentStep === 7) {
-                    consoleWindow.classList.add('virus-glitch');
+                    consoleWindow.classList.add('virus-shaking');
                 }
 
                 currentStep++;
-                setTimeout(printLog, Math.random() * 700 + 500);
+                setTimeout(printLog, Math.random() * 900 + 700);
             } else {
-                flash.style.opacity = '1';
+                flash.style.animation = "hardware-die-burst 0.5s forwards";
                 
                 setTimeout(() => {
                     document.getElementById('mainStage').style.display = 'none';
+                    flash.style.animation = "none";
                     flash.style.opacity = '0';
                     shutdownScreen.style.display = 'flex';
                     
                     setTimeout(() => {
-                        wrapper.style.transform = "rotate(43deg) scale(0.85)";
+                        artifacts.style.display = 'block';
+                        wrapper.style.transform = "rotate(43deg) scale(0.82)";
                         
                         setTimeout(() => {
                             document.body.classList.add('frozen-glitch');
                             wrapper.classList.add('frozen-glitch');
-                        }, 50);
+                        }, 60);
                         
-                    }, 4000); 
+                    }, 6000); 
 
-                }, 200);
+                }, 500);
             }
         }
 
-        setTimeout(printLog, 1000);
+        setTimeout(printLog, 1500);
     </script>
 </body>
 </html>
