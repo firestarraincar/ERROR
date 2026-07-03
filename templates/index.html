@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚠️ SYSTEM BREACH</title>
+    <title>⚠️ SYSTEM CORRUPTION</title>
     <style>
         * {
             margin: 0;
@@ -11,12 +11,13 @@
             box-sizing: border-box;
         }
 
-        body {
+        html, body {
+            width: 100%;
+            height: 100%;
             background: #000;
-            height: 100vh;
             overflow: hidden;
             font-family: 'Courier New', monospace;
-            cursor: default;
+            cursor: none;
         }
 
         /* ===== ПОЛНОЭКРАННЫЙ КОНТЕЙНЕР ===== */
@@ -28,105 +29,255 @@
             overflow: hidden;
         }
 
-        /* ===== ТЕРМИНАЛЬНЫЙ ТЕКСТ ===== */
-        #terminal {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #00ff41;
-            font-size: 1.2rem;
-            text-align: center;
-            z-index: 10;
-            text-shadow: 0 0 20px #00ff4144;
-            opacity: 0;
-            animation: fadeIn 0.5s ease-out 0.5s forwards;
-        }
-
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-
-        #terminal .cursor {
-            display: inline-block;
-            width: 10px;
-            height: 1.2em;
-            background: #00ff41;
-            animation: blink 0.8s infinite;
-            vertical-align: text-bottom;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        #terminal .line {
-            opacity: 0;
-            animation: typeIn 0.1s ease-out forwards;
-        }
-
-        #terminal .line:nth-child(1) { animation-delay: 0.8s; }
-        #terminal .line:nth-child(2) { animation-delay: 1.6s; }
-        #terminal .line:nth-child(3) { animation-delay: 2.4s; }
-        #terminal .line:nth-child(4) { animation-delay: 3.2s; }
-
-        @keyframes typeIn {
-            0% { opacity: 0; transform: translateY(10px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ===== ГЛИТЧ-ЭФФЕКТЫ ===== */
-        .glitch-layer {
+        /* ===== БЫСТРЫЙ КОД В НАЧАЛЕ ===== */
+        #fastCode {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        /* Строки кода */
-        .code-line {
-            position: absolute;
+            z-index: 5;
             color: #00ff41;
-            font-size: 0.7rem;
-            font-family: 'Courier New', monospace;
+            font-size: 0.6rem;
+            line-height: 1.2;
+            white-space: pre-wrap;
+            word-break: break-all;
             opacity: 0;
-            white-space: nowrap;
-            animation: codeRain 3s linear infinite;
+            animation: fastCodeFlash 2s ease-out 0.3s forwards;
+            font-family: 'Courier New', monospace;
+            background: #000;
+            padding: 20px;
+            overflow: hidden;
+            text-shadow: 0 0 5px #00ff4144;
         }
 
-        .code-line:nth-child(odd) {
-            color: #ff0040;
-            animation-duration: 2.5s;
-        }
-
-        .code-line:nth-child(3n) {
-            color: #ffcc00;
-            animation-duration: 4s;
-        }
-
-        @keyframes codeRain {
+        @keyframes fastCodeFlash {
             0% {
                 opacity: 0;
-                transform: translateY(-100vh);
+                transform: scale(1.1);
             }
-            10% {
+            5% {
                 opacity: 1;
+                transform: scale(1);
             }
-            90% {
+            95% {
                 opacity: 1;
             }
             100% {
                 opacity: 0;
-                transform: translateY(100vh);
+                transform: scale(1.05);
             }
         }
 
-        /* ===== ЭФФЕКТ РАЗРЫВА (как в кино) ===== */
-        .breach-overlay {
+        /* ===== ЭФФЕКТ КРОВИ ПОД УГЛОМ ===== */
+        #bloodOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+            opacity: 0;
+            animation: bloodAppear 0.8s ease-out 2.2s forwards;
+            background: 
+                /* Кровь под углом - тёмные пятна */
+                radial-gradient(ellipse at 20% 80%, rgba(120, 0, 0, 0.7) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(150, 0, 0, 0.6) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 50%, rgba(100, 0, 0, 0.3) 0%, transparent 70%),
+                /* Кровавые потеки */
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent 0px,
+                    transparent 50px,
+                    rgba(80, 0, 0, 0.15) 50px,
+                    rgba(80, 0, 0, 0.15) 52px
+                ),
+                repeating-linear-gradient(
+                    45deg,
+                    transparent 0px,
+                    transparent 30px,
+                    rgba(60, 0, 0, 0.1) 30px,
+                    rgba(60, 0, 0, 0.1) 32px
+                );
+            transform: rotate(0deg);
+        }
+
+        @keyframes bloodAppear {
+            0% {
+                opacity: 0;
+                transform: scale(1.3) rotate(-5deg);
+            }
+            30% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+            100% {
+                opacity: 0.85;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        /* ===== КРОВАВЫЕ БРЫЗГИ ===== */
+        .blood-splat {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(ellipse, rgba(180, 0, 0, 0.8), rgba(80, 0, 0, 0.2));
+            pointer-events: none;
+            z-index: 11;
+            opacity: 0;
+            animation: splatAppear 1s ease-out forwards;
+        }
+
+        .blood-splat:nth-child(1) {
+            width: 300px;
+            height: 200px;
+            top: 10%;
+            right: 5%;
+            transform: rotate(25deg);
+            animation-delay: 2.5s;
+        }
+
+        .blood-splat:nth-child(2) {
+            width: 250px;
+            height: 350px;
+            bottom: 5%;
+            left: 10%;
+            transform: rotate(-15deg);
+            animation-delay: 2.8s;
+            background: radial-gradient(ellipse, rgba(200, 0, 0, 0.6), rgba(60, 0, 0, 0.1));
+        }
+
+        .blood-splat:nth-child(3) {
+            width: 150px;
+            height: 150px;
+            top: 40%;
+            left: 60%;
+            transform: rotate(45deg);
+            animation-delay: 3.1s;
+            background: radial-gradient(ellipse, rgba(160, 0, 0, 0.7), rgba(40, 0, 0, 0.1));
+        }
+
+        @keyframes splatAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) rotate(0deg);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.2) rotate(10deg);
+            }
+            100% {
+                opacity: 0.6;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        /* ===== ОШИБКИ (красные, страшные) ===== */
+        #errorOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 12;
+            pointer-events: none;
+            opacity: 0;
+            animation: errorAppear 1.5s ease-out 2s forwards;
+        }
+
+        .error-text {
+            position: absolute;
+            color: #ff0040;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 30px #ff004088, 0 0 60px #ff004044;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 3px;
+            opacity: 0;
+            animation: errorFlash 0.3s ease-out forwards;
+            text-transform: uppercase;
+        }
+
+        .error-text:nth-child(1) {
+            top: 15%;
+            left: 10%;
+            font-size: 3rem;
+            animation-delay: 2.1s;
+            transform: rotate(-3deg);
+        }
+
+        .error-text:nth-child(2) {
+            top: 50%;
+            right: 8%;
+            font-size: 2.5rem;
+            animation-delay: 2.4s;
+            transform: rotate(5deg);
+            color: #cc0033;
+        }
+
+        .error-text:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            font-size: 2rem;
+            animation-delay: 2.7s;
+            transform: rotate(-7deg);
+            color: #ff0055;
+        }
+
+        .error-text:nth-child(4) {
+            top: 30%;
+            left: 50%;
+            font-size: 1.8rem;
+            animation-delay: 3.0s;
+            transform: rotate(2deg);
+            color: #990033;
+            text-shadow: 0 0 40px #99003388;
+        }
+
+        .error-text:nth-child(5) {
+            bottom: 40%;
+            right: 20%;
+            font-size: 2.2rem;
+            animation-delay: 3.3s;
+            transform: rotate(-4deg);
+            color: #ff0033;
+        }
+
+        @keyframes errorFlash {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) rotate(0deg);
+                text-shadow: none;
+            }
+            20% {
+                opacity: 1;
+                transform: scale(1.3) rotate(3deg);
+                text-shadow: 0 0 50px #ff0040;
+            }
+            40% {
+                opacity: 0.3;
+                transform: scale(0.9) rotate(-2deg);
+            }
+            60% {
+                opacity: 1;
+                transform: scale(1.1) rotate(1deg);
+                text-shadow: 0 0 30px #ff004088;
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+                text-shadow: 0 0 20px #ff004066;
+            }
+        }
+
+        @keyframes errorAppear {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* ===== ЧЁРНЫЙ ЭКРАН ПОСЛЕ ВСЕГО ===== */
+        #blackScreen {
             position: absolute;
             top: 0;
             left: 0;
@@ -136,104 +287,70 @@
             z-index: 20;
             opacity: 0;
             pointer-events: none;
-            animation: breachFlash 0.3s ease-out 4.5s forwards;
+            animation: blackOut 0.5s ease-out 4s forwards;
         }
 
-        @keyframes breachFlash {
+        @keyframes blackOut {
             0% {
                 opacity: 0;
-                background: #000;
-            }
-            10% {
-                opacity: 1;
-                background: #fff;
-            }
-            20% {
-                opacity: 0.9;
-                background: #ff0040;
-            }
-            30% {
-                opacity: 0.8;
-                background: #000;
-            }
-            40% {
-                opacity: 1;
-                background: #00ff41;
-            }
-            50% {
-                opacity: 0.9;
-                background: #000;
-            }
-            60% {
-                opacity: 1;
-                background: #fff;
-            }
-            70% {
-                opacity: 0.5;
-                background: #000;
-            }
-            80% {
-                opacity: 1;
-                background: #ff0040;
-            }
-            90% {
-                opacity: 0.3;
-                background: #000;
             }
             100% {
-                opacity: 0;
-                background: #000;
+                opacity: 1;
+                pointer-events: all;
             }
         }
 
-        /* ===== ФИНАЛЬНЫЙ ЭКРАН ===== */
-        #final-screen {
+        /* ===== ФИНАЛЬНЫЙ КОД ПОСЛЕ ЧЁРНОГО ЭКРАНА ===== */
+        #finalCode {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #000;
-            z-index: 30;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
+            z-index: 25;
+            color: #00ff41;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-break: break-all;
             opacity: 0;
             pointer-events: none;
-            animation: finalReveal 1s ease-out 5.5s forwards;
+            animation: finalCodeAppear 0.5s ease-out 5s forwards;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            background: #000;
+            overflow: hidden;
+            text-shadow: 0 0 5px #00ff4122;
         }
 
-        @keyframes finalReveal {
+        @keyframes finalCodeAppear {
             0% {
                 opacity: 0;
-                transform: scale(0.8);
+                transform: scale(0.95);
             }
             100% {
-                opacity: 1;
+                opacity: 0.6;
                 transform: scale(1);
-                pointer-events: all;
             }
         }
 
-        #final-screen h1 {
-            font-size: 4rem;
+        /* ===== МЕРЦАЮЩИЙ КУРСОР В КОНЦЕ ===== */
+        #cursor {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            z-index: 30;
             color: #00ff41;
-            text-shadow: 0 0 40px #00ff4166, 0 0 80px #00ff4133;
-            letter-spacing: 10px;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        #final-screen .sub {
-            color: #00ff4188;
             font-size: 1.2rem;
-            margin-top: 20px;
-            letter-spacing: 4px;
+            opacity: 0;
+            animation: cursorAppear 0.5s ease-out 6s forwards;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
         }
 
-        #final-screen .sub .cursor {
+        #cursor .blink {
             display: inline-block;
-            width: 8px;
+            width: 12px;
             height: 1.2em;
             background: #00ff41;
             animation: blink 0.8s infinite;
@@ -241,63 +358,12 @@
             margin-left: 5px;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        @keyframes cursorAppear {
+            0% { opacity: 0; }
+            100% { opacity: 0.7; }
         }
 
-        /* ===== ИСКАЖЕНИЯ (глитч-эффекты на финальном экране) ===== */
-        .glitch-text {
-            position: relative;
-        }
-
-        .glitch-text::before,
-        .glitch-text::after {
-            content: '⚠️ ACCESS GRANTED ⚠️';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.8;
-        }
-
-        .glitch-text::before {
-            color: #ff0040;
-            z-index: -1;
-            animation: glitchShift 0.1s infinite alternate;
-        }
-
-        .glitch-text::after {
-            color: #00ffff;
-            z-index: -2;
-            animation: glitchShift 0.15s infinite alternate-reverse;
-        }
-
-        @keyframes glitchShift {
-            0% { transform: translate(-3px, 2px); }
-            100% { transform: translate(3px, -2px); }
-        }
-
-        /* ===== СТАТИСТИКА В УГЛУ ===== */
-        #stats {
-            position: absolute;
-            bottom: 20px;
-            right: 30px;
-            color: #00ff4144;
-            font-size: 0.6rem;
-            font-family: 'Courier New', monospace;
-            text-align: right;
-            z-index: 5;
-            opacity: 0;
-            animation: fadeIn 1s ease-out 6s forwards;
-        }
-
-        #stats .val {
-            color: #00ff41aa;
-        }
-
-        /* ===== ШУМ ===== */
+        /* ===== СТРАШНЫЙ ШУМ ===== */
         #noise {
             position: absolute;
             top: 0;
@@ -309,34 +375,61 @@
             background: repeating-linear-gradient(
                 0deg,
                 transparent 0px,
-                transparent 2px,
-                rgba(0, 255, 65, 0.01) 2px,
-                rgba(0, 255, 65, 0.01) 4px
+                transparent 1px,
+                rgba(255, 0, 0, 0.02) 1px,
+                rgba(255, 0, 0, 0.02) 2px
             );
-            animation: noiseMove 0.05s steps(2) infinite;
-            opacity: 0.3;
+            animation: noiseMove 0.03s steps(3) infinite;
+            opacity: 0.5;
         }
 
         @keyframes noiseMove {
             0% { transform: translate(0, 0); }
-            100% { transform: translate(2px, -2px); }
+            100% { transform: translate(-3px, 3px); }
+        }
+
+        /* ===== БЫСТРОЕ МЕРЦАНИЕ ЭКРАНА ===== */
+        #flicker {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+            background: #000;
+            opacity: 0;
+            animation: flickerEffect 2s ease-out 1.5s forwards;
+        }
+
+        @keyframes flickerEffect {
+            0% { opacity: 0; }
+            5% { opacity: 0.9; }
+            10% { opacity: 0; }
+            15% { opacity: 0.8; }
+            20% { opacity: 0; }
+            25% { opacity: 1; }
+            30% { opacity: 0; }
+            100% { opacity: 0; }
         }
 
         /* ===== АДАПТАЦИЯ ===== */
         @media (max-width: 600px) {
-            #terminal {
-                font-size: 0.8rem;
-                padding: 20px;
+            .error-text {
+                font-size: 1rem !important;
             }
-            #final-screen h1 {
-                font-size: 2rem;
-                letter-spacing: 5px;
+            .error-text:nth-child(1) { font-size: 1.5rem !important; }
+            .error-text:nth-child(2) { font-size: 1.2rem !important; }
+            #fastCode {
+                font-size: 0.4rem;
+                padding: 10px;
             }
-            #final-screen .sub {
-                font-size: 0.8rem;
-            }
-            .code-line {
+            #finalCode {
                 font-size: 0.5rem;
+                padding: 10px;
+            }
+            .blood-splat {
+                display: none;
             }
         }
     </style>
@@ -348,144 +441,203 @@
     <!-- ШУМ -->
     <div id="noise"></div>
 
-    <!-- СТРОКИ КОДА (падающие) -->
-    <div class="glitch-layer" id="codeRain"></div>
+    <!-- МЕРЦАНИЕ -->
+    <div id="flicker"></div>
 
-    <!-- ТЕРМИНАЛ -->
-    <div id="terminal">
-        <div class="line">> INITIALIZING SYSTEM... <span class="cursor"></span></div>
-        <div class="line">> ESTABLISHING SECURE CONNECTION...</div>
-        <div class="line">> BYPASSING FIREWALL... ██████████ 100%</div>
-        <div class="line" style="color: #ffcc00;">> ACCESS GRANTED. WELCOME, OPERATOR.</div>
+    <!-- ===== БЫСТРЫЙ КОД (в начале) ===== -->
+    <div id="fastCode" id="fastCode"></div>
+
+    <!-- ===== КРОВЬ ПОД УГЛОМ ===== -->
+    <div id="bloodOverlay"></div>
+
+    <!-- ===== КРОВАВЫЕ БРЫЗГИ ===== -->
+    <div class="blood-splat"></div>
+    <div class="blood-splat"></div>
+    <div class="blood-splat"></div>
+
+    <!-- ===== СТРАШНЫЕ ОШИБКИ ===== -->
+    <div id="errorOverlay">
+        <div class="error-text">⚠️ SYSTEM FAILURE ⚠️</div>
+        <div class="error-text">💀 CRITICAL ERROR 💀</div>
+        <div class="error-text">🔥 DATA CORRUPTED 🔥</div>
+        <div class="error-text">⚡ MEMORY DUMP ⚡</div>
+        <div class="error-text">❌ ACCESS DENIED ❌</div>
     </div>
 
-    <!-- ЭФФЕКТ ВЗЛОМА (как в кино) -->
-    <div class="breach-overlay"></div>
+    <!-- ===== ЧЁРНЫЙ ЭКРАН ===== -->
+    <div id="blackScreen"></div>
 
-    <!-- ФИНАЛЬНЫЙ ЭКРАН -->
-    <div id="final-screen">
-        <h1 class="glitch-text">⚠️ ACCESS GRANTED ⚠️</h1>
-        <div class="sub">
-            <span style="color: #ff0040;">▶</span> SYSTEM BREACHED <span class="cursor"></span>
-        </div>
-        <div style="margin-top: 30px; color: #00ff4144; font-size: 0.8rem; letter-spacing: 2px;">
-            ████████████████████████████████████
-        </div>
-        <div style="margin-top: 40px; display: flex; gap: 30px; flex-wrap: wrap; justify-content: center;">
-            <span style="color: #00ff4166; font-size: 0.7rem;">🔓 FIREWALL: <span style="color: #00ff41;">OFFLINE</span></span>
-            <span style="color: #00ff4166; font-size: 0.7rem;">📡 CONNECTION: <span style="color: #00ff41;">SECURE</span></span>
-            <span style="color: #00ff4166; font-size: 0.7rem;">⚡ SYSTEM: <span style="color: #ffcc00;">COMPROMISED</span></span>
-        </div>
-    </div>
+    <!-- ===== ФИНАЛЬНЫЙ КОД ===== -->
+    <div id="finalCode"></div>
 
-    <!-- СТАТИСТИКА -->
-    <div id="stats">
-        <div>NODE: <span class="val">HACKER-BREACH-01</span></div>
-        <div>UPTIME: <span class="val" id="uptime">00:00:00</span></div>
-        <div>PACKETS: <span class="val" id="packets">0</span></div>
+    <!-- ===== КУРСОР ===== -->
+    <div id="cursor">
+        <span style="color: #ff0040;">▶</span> SYSTEM RECOVERED <span class="blink"></span>
     </div>
 
 </div>
 
 <script>
-    // ===== ГЕНЕРАЦИЯ СТРОК КОДА =====
-    (function generateCodeRain() {
-        const container = document.getElementById('codeRain');
+    // ===== ГЕНЕРАЦИЯ БЫСТРОГО КОДА =====
+    (function generateFastCode() {
+        const el = document.getElementById('fastCode');
+        const lines = [];
         const strings = [
-            'ERROR: SEGFAULT at 0x7FFF8A3B2F1C',
-            'WARNING: UNAUTHORIZED ACCESS DETECTED',
-            'KERNEL PANIC: SYSTEM HALTED',
-            '> ROOT ACCESS GRANTED',
-            'DECRYPTING: ../../etc/shadow',
-            '⚠️ FIREWALL BYPASSED',
-            'BUFFER OVERFLOW: 0xDEADBEEF',
-            'INJECTING SHELLCODE...',
-            'CONNECTION: 192.168.0.1:443',
-            'HANDSHAKE: AES-256-CBC',
-            'PAYLOAD LOADED: 87%',
-            'SESSION ID: 0x7F3A2B1C',
-            'PRIVILEGE ESCALATION: SUCCESS',
-            'SECURE CHANNEL: ESTABLISHED',
-            'DATA EXFILTRATION: IN PROGRESS'
+            'ERROR: 0xDEADBEEF', 'SEGFAULT', 'KERNEL PANIC', 'DATA LOSS',
+            'MEMORY CORRUPTION', 'STACK OVERFLOW', 'HEAP CORRUPTION',
+            'INVALID POINTER', 'ACCESS VIOLATION', 'SYSTEM CRASH',
+            'FATAL EXCEPTION', 'UNHANDLED INTERRUPT', 'DMA FAILURE',
+            'PCIe ERROR', 'BIOS CORRUPT', 'BOOT FAILURE', 'DISK ERROR',
+            'FS CORRUPTION', 'INODE LOST', 'JOURNAL ERROR'
         ];
 
-        // Создаём 50-70 строк
-        for (let i = 0; i < 60; i++) {
-            const line = document.createElement('div');
-            line.className = 'code-line';
-            line.textContent = strings[i % strings.length] + ' ' + Math.random().toString(16).substring(2, 8);
-            line.style.left = Math.random() * 90 + '%';
-            line.style.fontSize = (0.5 + Math.random() * 0.8) + 'rem';
-            line.style.animationDelay = (Math.random() * 5) + 's';
-            line.style.animationDuration = (3 + Math.random() * 4) + 's';
-            line.style.color = ['#00ff41', '#ff0040', '#ffcc00', '#00ffff'][Math.floor(Math.random() * 4)];
-            container.appendChild(line);
-        }
-    })();
-
-    // ===== ТАЙМЕР АПТАЙМА =====
-    (function updateUptime() {
-        const start = Date.now();
-        const uptimeEl = document.getElementById('uptime');
-        const packetsEl = document.getElementById('packets');
-
-        function formatTime(ms) {
-            const totalSec = Math.floor(ms / 1000);
-            const h = String(Math.floor(totalSec / 3600)).padStart(2, '0');
-            const m = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
-            const s = String(totalSec % 60).padStart(2, '0');
-            return `${h}:${m}:${s}`;
+        // Генерируем 50-70 строк быстрого кода
+        for (let i = 0; i < 80; i++) {
+            const randomHex = Math.random().toString(16).substring(2, 10).toUpperCase();
+            const randomString = strings[Math.floor(Math.random() * strings.length)];
+            const randomNum = Math.floor(Math.random() * 9999);
+            const prefix = ['[ERR]', '[WARN]', '[FATAL]', '[CRIT]', '[PANIC]'][Math.floor(Math.random() * 5)];
+            const color = ['#ff0040', '#ff4400', '#ff0044', '#cc0033'][Math.floor(Math.random() * 4)];
+            lines.push(`<span style="color:${color}">${prefix}</span> ${randomString} 0x${randomHex} at ${randomNum}\n`);
         }
 
-        setInterval(() => {
-            const elapsed = Date.now() - start;
-            uptimeEl.textContent = formatTime(elapsed);
-            packetsEl.textContent = Math.floor(Math.random() * 999999) + 1;
-        }, 1000);
+        el.innerHTML = lines.join('').repeat(2);
     })();
 
-    // ===== ЭФФЕКТ МЕРЦАНИЯ В КОНЦЕ =====
-    (function finalGlitch() {
-        const finalScreen = document.getElementById('final-screen');
-        const glitchText = finalScreen.querySelector('.glitch-text');
+    // ===== ГЕНЕРАЦИЯ ФИНАЛЬНОГО КОДА =====
+    (function generateFinalCode() {
+        const el = document.getElementById('finalCode');
+        const lines = [];
+        const hexBytes = ['0x00', '0xFF', '0x3F', '0xAA', '0x55', '0xCC', '0x33', '0x99', '0x66', '0x11'];
 
-        // Случайные глитч-эффекты на финальном экране
-        setInterval(() => {
-            if (Math.random() < 0.1) {
-                glitchText.style.transform = `translate(${(Math.random() - 0.5) * 10}px, ${(Math.random() - 0.5) * 10}px)`;
-                setTimeout(() => {
-                    glitchText.style.transform = 'none';
-                }, 100);
+        for (let i = 0; i < 200; i++) {
+            const hex = hexBytes[Math.floor(Math.random() * hexBytes.length)];
+            const num = Math.floor(Math.random() * 255);
+            const hexStr = num.toString(16).toUpperCase().padStart(2, '0');
+            const prefix = ['DB', 'DW', 'DD', 'DQ'][Math.floor(Math.random() * 4)];
+            const label = `L${Math.floor(Math.random() * 9999)}`;
+            const ascii = String.fromCharCode(32 + Math.random() * 95);
+            lines.push(`${label}: ${prefix} 0x${hexStr} ${hex} ; '${ascii}'`);
+        }
+
+        // Добавляем ассемблерный код
+        const asm = [
+            'mov eax, 0xDEADBEEF',
+            'xor ebx, ebx',
+            'push eax',
+            'call 0x7FFF8A3B',
+            'pop eax',
+            'jmp 0x0000FFFF',
+            'ret',
+            'nop',
+            'int 0x80',
+            'syscall'
+        ];
+
+        for (let i = 0; i < 20; i++) {
+            const instr = asm[Math.floor(Math.random() * asm.length)];
+            const addr = `0x${Math.floor(Math.random() * 0xFFFF).toString(16).toUpperCase().padStart(4, '0')}`;
+            lines.push(`[${addr}] ${instr}`);
+        }
+
+        // Добавляем шестнадцатеричный дамп
+        for (let i = 0; i < 50; i++) {
+            let hexLine = '';
+            for (let j = 0; j < 16; j++) {
+                hexLine += Math.floor(Math.random() * 255).toString(16).toUpperCase().padStart(2, '0') + ' ';
             }
-            if (Math.random() < 0.05) {
-                document.getElementById('container').style.filter = `brightness(${0.8 + Math.random() * 0.4})`;
+            const addr = `0x${(i * 16).toString(16).toUpperCase().padStart(8, '0')}`;
+            lines.push(`${addr}: ${hexLine}`);
+        }
+
+        el.textContent = lines.join('\n');
+    })();
+
+    // ===== ЭФФЕКТ МЕРЦАНИЯ И ГЛИТЧА =====
+    (function glitchEffects() {
+        const container = document.getElementById('container');
+
+        // Случайные вспышки в процессе
+        setInterval(() => {
+            if (Math.random() < 0.08) {
+                container.style.filter = `brightness(${0.5 + Math.random() * 1.5}) contrast(${0.8 + Math.random() * 0.4})`;
                 setTimeout(() => {
-                    document.getElementById('container').style.filter = 'none';
+                    container.style.filter = 'none';
                 }, 150);
             }
         }, 500);
+
+        // Красные вспышки
+        setInterval(() => {
+            if (Math.random() < 0.03) {
+                const flash = document.createElement('div');
+                flash.style.cssText = `
+                    position: absolute;
+                    top: 0; left: 0;
+                    width: 100%; height: 100%;
+                    background: rgba(255, 0, 0, 0.3);
+                    z-index: 15;
+                    pointer-events: none;
+                `;
+                container.appendChild(flash);
+                setTimeout(() => flash.remove(), 100);
+            }
+        }, 1000);
     })();
 
-    // ===== ЗВУКОВОЙ ЭФФЕКТ (опционально) =====
-    // Если хотите добавить звук взлома — раскомментируйте
-    /*
-    function playBreachSound() {
+    // ===== ЗВУКОВОЙ ЭФФЕКТ (страшный гул) =====
+    (function playHorrorSound() {
         try {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+            // Низкий гул
             const oscillator = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
             oscillator.connect(gainNode);
             gainNode.connect(audioCtx.destination);
-            oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.3);
-            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-            oscillator.start(audioCtx.currentTime);
-            oscillator.stop(audioCtx.currentTime + 0.5);
+            oscillator.type = 'sawtooth';
+            oscillator.frequency.setValueAtTime(55, audioCtx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 2);
+            gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2);
+            oscillator.start(audioCtx.currentTime + 1);
+            oscillator.stop(audioCtx.currentTime + 3);
+
+            // Высокий шум (как помеха)
+            const noise = audioCtx.createBufferSource();
+            const bufferSize = audioCtx.sampleRate * 2;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+            }
+            noise.buffer = buffer;
+            const noiseGain = audioCtx.createGain();
+            noise.connect(noiseGain);
+            noiseGain.connect(audioCtx.destination);
+            noiseGain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            noiseGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2);
+            noise.start(audioCtx.currentTime + 0.5);
+            noise.stop(audioCtx.currentTime + 2.5);
+
         } catch(e) { /* тихо */ }
-    }
-    setTimeout(playBreachSound, 4500);
-    */
+    })();
+
+    // ===== СТРАШНЫЙ ТЕКСТ В КОНСОЛИ =====
+    console.log('%c⚠️ SYSTEM CORRUPTED ⚠️', 'color: #ff0040; font-size: 40px; font-weight: bold;');
+    console.log('%cYOU SHOULD NOT BE HERE', 'color: #ff0040; font-size: 20px;');
+    console.log('%cDATA LOSS DETECTED', 'color: #ff0040; font-size: 16px;');
+
+    // ===== ПРОСЬБА ВКЛЮЧИТЬ ПОЛНОЭКРАННЫЙ РЕЖИМ =====
+    document.addEventListener('click', () => {
+        if (document.fullscreenElement) return;
+        document.documentElement.requestFullscreen?.().catch(() => {});
+    });
+
+    // Автоматический полноэкранный режим при загрузке
+    setTimeout(() => {
+        document.documentElement.requestFullscreen?.().catch(() => {});
+    }, 1000);
 </script>
 
 </body>
