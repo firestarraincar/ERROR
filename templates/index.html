@@ -17,6 +17,37 @@
             background-color: #000000;
             font-family: monospace;
         }
+
+        /* Кнопка запуска (Обход блокировки звука браузером) */
+        .start-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #020202;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .start-btn {
+            background: transparent;
+            border: 2px solid #00ff33;
+            color: #00ff33;
+            padding: 15px 40px;
+            font-size: 16px;
+            font-family: monospace;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(0, 255, 51, 0.2);
+            transition: all 0.3s ease;
+        }
+        .start-btn:hover {
+            background: #00ff33;
+            color: #000;
+            box-shadow: 0 0 30px rgba(0, 255, 51, 0.6);
+        }
+
         #viewport-wrapper {
             width: 100%;
             height: 100%;
@@ -24,8 +55,8 @@
             background-color: #020202;
             transition: transform 0.4s cubic-bezier(0.18, 0.9, 0.3, 1.4);
             transform-origin: center center;
+            display: none; /* Скрыто до клика */
         }
-        /* Слой помех и мерцания экрана */
         .glitch-scanlines {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -60,7 +91,6 @@
         .ln-warn { color: #ffaa00; font-weight: bold; }
         .ln-danger { color: #ff0033; font-weight: bold; text-shadow: 0 0 5px rgba(255,0,51,0.4); }
         
-        /* Жесткие лаги и подергивания картинки */
         .virus-shaking {
             animation: extreme-shake 0.07s infinite alternate;
         }
@@ -127,7 +157,6 @@
         .frozen-content {
             animation-play-state: paused !important;
         }
-        /* ФИНАЛЬНЫЙ СЛОЙ КРАХА */
         .horror-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -147,6 +176,11 @@
     </style>
 </head>
 <body>
+    <!-- Интерактивный барьер для разблокировки звука -->
+    <div class="start-overlay" id="gateOverlay">
+        <button class="start-btn" onclick="initializeVirus()">Запустить Сервер</button>
+    </div>
+
     <div class="glitch-scanlines"></div>
 
     <div id="viewport-wrapper">
@@ -190,11 +224,12 @@
         const finalBox = document.getElementById('finalHorrorBox');
         const loaderCircle = document.getElementById('loaderCircle');
 
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let audioCtx;
 
-        // Имитация треска жесткого диска (Белый шум + FM модуляция)
+        // Полноценный звук треска жесткого диска (HDD механика)
         function playHDDNoise() {
-            let bufferSize = audioCtx.sampleRate * 0.03; // Короткие пакеты треска
+            if (!audioCtx) return;
+            let bufferSize = audioCtx.sampleRate * 0.025;
             let buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
             let data = buffer.getChannelData(0);
             for (let i = 0; i < bufferSize; i++) {
@@ -205,11 +240,11 @@
 
             let filter = audioCtx.createBiquadFilter();
             filter.type = 'bandpass';
-            filter.frequency.value = Math.random() * 800 + 200; // Треск механики диска
+            filter.frequency.value = Math.random() * 900 + 150;
 
             let gain = audioCtx.createGain();
-            gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.025);
 
             noise.connect(filter);
             filter.connect(gain);
@@ -217,37 +252,54 @@
             noise.start();
         }
 
-        // Жуткий глубокий аналоговый смех (30 перегруженных осцилляторов)
-        function playDeepEvilLaugh() {
-            for (let i = 0; i < 30; i++) {
+        // Звук перегрузки железа и короткого замыкания (Голос глитчей)
+        function playGlitchSound() {
+            if (!audioCtx) return;
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(Math.random() * 90 + 20, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.15);
+        }
+
+        // Страшный финальный звук взрыва железа, скрежета металла и разрушения
+        function playHardwareDestructionSound() {
+            if (!audioCtx) return;
+            
+            // Каскад из низкочастотных взрывов и металлического скрежета
+            for (let i = 0; i < 40; i++) {
                 setTimeout(() => {
                     let osc = audioCtx.createOscillator();
                     let gain = audioCtx.createGain();
-                    let distortion = audioCtx.createWaveShaper();
+                    let filter = audioCtx.createBiquadFilter();
 
-                    // Массив дисторшна для хрипоты
-                    let curve = new Float32Array(44100);
-                    for (let j = 0; j < 44100; j++) { curve[j] = Math.sin(j * 0.01) * 2; }
-                    distortion.curve = curve;
-
-                    osc.type = 'sawtooth';
-                    // Снижение тона волны для эффекта утробного хохота
-                    let targetFreq = 120 - (Math.floor(i / 2) * 8);
-                    osc.frequency.setValueAtTime(targetFreq + (Math.random() * 10), audioCtx.currentTime);
+                    osc.type = Math.random() > 0.4 ? 'sawtooth' : 'square';
+                    
+                    // Падающий, разрывающийся гул
+                    let currentFreq = 300 - (i * 6) + (Math.random() * 40);
+                    if (currentFreq < 30) currentFreq = 30;
+                    osc.frequency.setValueAtTime(currentFreq, audioCtx.currentTime);
+                    
+                    filter.type = 'lowpass';
+                    filter.frequency.value = 600;
 
                     gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
 
-                    osc.connect(distortion);
-                    distortion.connect(gain);
+                    osc.connect(filter);
+                    filter.connect(gain);
                     gain.connect(audioCtx.destination);
                     osc.start();
-                    osc.stop(audioCtx.currentTime + 0.35);
-                }, i * 75);
+                    osc.stop(audioCtx.currentTime + 0.4);
+                }, i * 40);
             }
         }
 
-        // Реалистичный правдивый сценарий атаки (30 шагов)
         const attackSteps = [
             { t: "[INFO] Инициализация процесса с повышенными привилегиями TI...", type: 'ln-info' },
             { t: "[OK] Открытие хэндла процесса lsass.exe (Прямой доступ к памяти)...", type: 'ln-info' },
@@ -276,6 +328,17 @@
         ];
 
         let currentStep = 0;
+        let glitchSoundInterval;
+
+        function initializeVirus() {
+            // Инициализируем аудиоконтекст по клику пользователя
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            document.getElementById('gateOverlay').style.display = 'none';
+            wrapper.style.display = 'block';
+            
+            // Начинаем вывод логов
+            setTimeout(printLog, 500);
+        }
 
         function printLog() {
             if (currentStep < attackSteps.length) {
@@ -286,57 +349,27 @@
                 logsContainer.appendChild(p);
                 logsContainer.scrollTop = logsContainer.scrollHeight;
 
-                // На каждый лог воспроизводится жесткий треск чтения диска!
+                // Механический скрежет HDD жесткого диска при печати каждой строки лога!
                 playHDDNoise();
-                if (Math.random() > 0.4) playHDDNoise(); // Двойной треск для плотности
+                if (Math.random() > 0.4) playHDDNoise();
 
-                // Реалистичные лаги: на шаге с удалением диска консоль трясет и она начинает тормозить
                 if (currentStep === 7) {
                     consoleWindow.classList.add('virus-shaking');
+                    glitchSoundInterval = setInterval(playGlitchSound, 160);
                 }
 
                 currentStep++;
                 
-                // Симуляция ЛАГОВ: задержка между логами колеблется от сверхбыстрой до сильных зависаний
+                // Симуляция ЛАГОВ: задержки прыгают случайным образом
                 let lagDelay = Math.random() * 600 + 300;
                 if (currentStep > 7 && Math.random() > 0.8) {
-                    lagDelay = 1800; // Жёсткий лаг-зависание вывода данных
+                    lagDelay = 1800; // Сильное зависание системы (вирус лагает)
                 }
                 setTimeout(printLog, lagDelay);
             } else {
-                // Вспышка смерти железа
                 flash.style.animation = "hardware-die-burst 0.5s forwards";
+                clearInterval(glitchSoundInterval);
                 
                 setTimeout(() => {
                     document.getElementById('mainStage').style.display = 'none';
                     flash.style.animation = "none";
-                    flash.style.opacity = '0';
-                    shutdownScreen.style.display = 'flex';
-                    
-                    // Окно Windows крутится 7 секунд
-                    setTimeout(() => {
-                        artifacts.style.display = 'block';
-                        wrapper.style.transform = "rotate(43deg) scale(0.80)";
-                        loaderCircle.classList.add('frozen-content');
-                        
-                        // Постоянный треск сломанного диска при фризе
-                        let freezeBuzz = setInterval(playHDDNoise, 60);
-                        
-                        setTimeout(() => {
-                            clearInterval(freezeBuzz);
-                            wrapper.style.display = 'none';
-                            finalBox.style.display = 'flex'; // Показываем надпись
-                            playDeepEvilLaugh(); // Включаем жуткий аналоговый хохот вируса
-                        }, 4000);
-
-                    }, 7000); 
-
-                }, 500);
-            }
-        }
-
-        // Запуск через 1.5 секунды
-        setTimeout(printLog, 1500);
-    </script>
-</body>
-</html>
