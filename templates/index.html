@@ -1,218 +1,3 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ SYSTEM TERMINATION IN PROGRESS</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body, html {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #000000;
-            font-family: monospace;
-        }
-
-        /* Кнопка запуска (Обход блокировки звука браузером) */
-        .start-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #020202;
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        .start-btn {
-            background: transparent;
-            border: 2px solid #00ff33;
-            color: #00ff33;
-            padding: 15px 40px;
-            font-size: 16px;
-            font-family: monospace;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            box-shadow: 0 0 20px rgba(0, 255, 51, 0.2);
-            transition: all 0.3s ease;
-        }
-        .start-btn:hover {
-            background: #00ff33;
-            color: #000;
-            box-shadow: 0 0 30px rgba(0, 255, 51, 0.6);
-        }
-
-        #viewport-wrapper {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            background-color: #020202;
-            transition: transform 0.4s cubic-bezier(0.18, 0.9, 0.3, 1.4);
-            transform-origin: center center;
-            display: none;
-        }
-        .glitch-scanlines {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
-            background-size: 100% 6px, 8px 100%;
-            z-index: 20;
-            pointer-events: none;
-        }
-        .stage {
-            position: absolute;
-            width: 100%; height: 100%;
-            display: flex; justify-content: center; align-items: center;
-            z-index: 5;
-        }
-        .hacker-console {
-            width: 94%; max-width: 880px; height: 580px;
-            background: rgba(2, 2, 2, 0.99);
-            border: 1px solid #00ff33;
-            box-shadow: 0 0 45px rgba(0, 255, 51, 0.15);
-            display: flex; flex-direction: column;
-        }
-        .console-header {
-            background: #050505; padding: 12px 18px;
-            border-bottom: 1px solid #00ff33; color: #00ff33;
-            display: flex; justify-content: space-between; font-size: 13px;
-        }
-        .console-body {
-            padding: 22px; color: #00ff33; font-size: 13px;
-            line-height: 1.7; overflow-y: auto; flex-grow: 1;
-        }
-        .ln-info { color: #00ff33; }
-        .ln-warn { color: #ffaa00; font-weight: bold; }
-        .ln-danger { color: #ff0033; font-weight: bold; text-shadow: 0 0 5px rgba(255,0,51,0.4); }
-        
-        .virus-shaking {
-            animation: extreme-shake 0.07s infinite alternate;
-        }
-        @keyframes extreme-shake {
-            0% { transform: translate(3px, -1px) scaleY(1.01); filter: contrast(140%) hue-rotate(0deg); }
-            100% { transform: translate(-3px, 2px) skewX(1deg); filter: contrast(180%) hue-rotate(90deg); }
-        }
-        .hardware-flash {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #fff; z-index: 99; opacity: 0; pointer-events: none;
-        }
-        @keyframes hardware-die-burst {
-            0% { opacity: 0; }
-            15% { opacity: 1; background: #ff0033; }
-            40% { opacity: 0; }
-            100% { opacity: 1; background: #004b7e; }
-        }
-        .classic-shutdown {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #004b7e; z-index: 100;
-            display: none; flex-direction: column;
-            justify-content: center; align-items: center;
-            color: #ffffff; font-family: 'Segoe UI', Arial, sans-serif;
-            cursor: none; user-select: none;
-        }
-        .dots-circle {
-            position: relative; width: 65px; height: 65px; margin-bottom: 35px;
-        }
-        .circle-dot {
-            position: absolute; width: 6px; height: 6px;
-            background: #ffffff; border-radius: 50%; top: 0; left: 29px;
-            transform-origin: 3px 32px; opacity: 0;
-            animation: slow-fade-orbit 2.6s infinite linear;
-        }
-        .circle-dot:nth-child(1) { transform: rotate(0deg); animation-delay: 0s; }
-        .circle-dot:nth-child(2) { transform: rotate(30deg); animation-delay: 0.21s; }
-        .circle-dot:nth-child(3) { transform: rotate(60deg); animation-delay: 0.42s; }
-        .circle-dot:nth-child(4) { transform: rotate(90deg); animation-delay: 0.63s; }
-        .circle-dot:nth-child(5) { transform: rotate(120deg); animation-delay: 0.84s; }
-        .circle-dot:nth-child(6) { transform: rotate(150deg); animation-delay: 1.05s; }
-        .circle-dot:nth-child(7) { transform: rotate(180deg); animation-delay: 1.26s; }
-        .circle-dot:nth-child(8) { transform: rotate(210deg); animation-delay: 1.47s; }
-        .circle-dot:nth-child(9) { transform: rotate(240deg); animation-delay: 1.68s; }
-        .circle-dot:nth-child(10) { transform: rotate(270deg); animation-delay: 1.89s; }
-        .circle-dot:nth-child(11) { transform: rotate(300deg); animation-delay: 2.1s; }
-        .circle-dot:nth-child(12) { transform: rotate(330deg); animation-delay: 2.31s; }
-        @keyframes slow-fade-orbit {
-            0% { opacity: 1; }
-            50% { opacity: 0.1; }
-            100% { opacity: 1; }
-        }
-        .shutdown-label {
-            font-size: 23px; font-weight: 300; letter-spacing: 0.5px;
-        }
-        .gpu-artifacts {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: repeating-linear-gradient(90deg, transparent, transparent 25px, rgba(255, 0, 85, 0.5) 25px, rgba(255, 0, 85, 0.4) 28px),
-                        repeating-linear-gradient(0deg, transparent, transparent 35px, rgba(0, 255, 100, 0.4) 35px, rgba(0, 255, 100, 0.3) 38px);
-            z-index: 150; display: none; pointer-events: none;
-        }
-        .frozen-content {
-            animation-play-state: paused !important;
-        }
-        .horror-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #000000; z-index: 999;
-            display: none; justify-content: center; align-items: center;
-        }
-        .horror-msg {
-            color: #ff0011; font-size: 52px; font-weight: 900;
-            font-family: 'Courier New', Courier, monospace;
-            text-shadow: 0 0 40px #ff0000;
-            animation: blood-pulse 1.3s infinite alternate;
-        }
-        @keyframes blood-pulse {
-            0% { opacity: 0.1; transform: scale(0.92); filter: blur(4px); }
-            100% { opacity: 1; transform: scale(1.06); filter: blur(0px); }
-        }
-    </style>
-</head>
-<body>
-    <!-- Интерактивный барьер для разблокировки звука -->
-    <div class="start-overlay" id="gateOverlay">
-        <button class="start-btn" onclick="initializeVirus()">Запустить Сервер</button>
-    </div>
-
-    <div class="glitch-scanlines"></div>
-
-    <div id="viewport-wrapper">
-        <div class="hardware-flash" id="flash"></div>
-        <div class="gpu-artifacts" id="artifacts"></div>
-
-        <div class="stage" id="mainStage">
-            <div class="hacker-console" id="consoleWindow">
-                <div class="console-header">
-                    <span>☠️ RANSOMWARE_MUTEX_EXEC.EXE</span>
-                    <span>THREAT_LEVEL: SYSTEM_DESTRUCTION</span>
-                </div>
-                <div class="console-body" id="logs"></div>
-            </div>
-        </div>
-
-        <div class="classic-shutdown" id="shutdownScreen">
-            <div class="dots-circle" id="loaderCircle">
-                <div class="circle-dot"></div><div class="circle-dot"></div>
-                <div class="circle-dot"></div><div class="circle-dot"></div>
-                <div class="circle-dot"></div><div class="circle-dot"></div>
-                <div class="circle-dot"></div><div class="circle-dot"></div>
-                <div class="circle-dot"></div><div class="circle-dot"></div>
-                <div class="circle-dot"></div><div class="circle-dot"></div>
-            </div>
-            <div class="shutdown-label">Выключение</div>
-        </div>
-    </div>
-
-    <div class="horror-overlay" id="finalHorrorBox">
-        <div class="horror-msg">ТВОЙ КОМПЬЮТЕР МОЙ</div>
-    </div>
     <script>
         const wrapper = document.getElementById('viewport-wrapper');
         const logsContainer = document.getElementById('logs');
@@ -223,109 +8,73 @@
         const finalBox = document.getElementById('finalHorrorBox');
         const loaderCircle = document.getElementById('loaderCircle');
 
-        let audioCtx;
+        // ОПРЕДЕЛЕНИЕ РЕАЛЬНЫХ ДАННЫХ ДЛЯ ОБМАНА
+        const cpuCores = navigator.hardwareConcurrency || 4;
+        const userAgent = navigator.userAgent;
+        let detectedOS = "Windows OS (x64)";
+        if (userAgent.includes("Mac")) detectedOS = "macOS Kernel";
+        if (userAgent.includes("Linux")) detectedOS = "Linux GNU Core";
 
-        function playHDDNoise() {
-            if (!audioCtx) return;
-            let bufferSize = audioCtx.sampleRate * 0.025;
-            let buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            let data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = Math.random() * 2 - 1;
+        // Функция фейкового вызова блокировок клавиатуры в логи
+        function triggerKeyAlert(keyName) {
+            const p = document.createElement('p');
+            p.className = 'ln-danger';
+            p.textContent = `[${new Date().toLocaleTimeString()}] [INTERCEPT] Попытка обхода через [${keyName}]. Вызов NtLockInput перехвачен.`;
+            logsContainer.appendChild(p);
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+        }
+
+        // ПЕРЕХВАТ КЛАВИШ (Лаги и фейк-блокировка)
+        window.addEventListener('keydown', function(e) {
+            // Блокируем F5, Ctrl+R, Esc, Backspace, Alt
+            if (e.key === 'F5' || (e.ctrlKey && e.key === 'r') || e.key === 'Escape' || e.key === 'Alt') {
+                e.preventDefault();
+                triggerKeyAlert(e.key.toUpperCase());
             }
-            let noise = audioCtx.createBufferSource();
-            noise.buffer = buffer;
+        });
 
-            let filter = audioCtx.createBiquadFilter();
-            filter.type = 'bandpass';
-            filter.frequency.value = Math.random() * 900 + 150;
-
-            let gain = audioCtx.createGain();
-            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.025);
-
-            noise.connect(filter);
-            filter.connect(gain);
-            gain.connect(audioCtx.destination);
-            noise.start();
-        }
-
-        function playGlitchSound() {
-            if (!audioCtx) return;
-            let osc = audioCtx.createOscillator();
-            let gain = audioCtx.createGain();
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(Math.random() * 90 + 20, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.15);
-        }
-
-        function playHardwareDestructionSound() {
-            if (!audioCtx) return;
-            for (let i = 0; i < 40; i++) {
-                setTimeout(() => {
-                    let osc = audioCtx.createOscillator();
-                    let gain = audioCtx.createGain();
-                    let filter = audioCtx.createBiquadFilter();
-
-                    osc.type = Math.random() > 0.4 ? 'sawtooth' : 'square';
-                    let currentFreq = 300 - (i * 6) + (Math.random() * 40);
-                    if (currentFreq < 30) currentFreq = 30;
-                    osc.frequency.setValueAtTime(currentFreq, audioCtx.currentTime);
-                    
-                    filter.type = 'lowpass';
-                    filter.frequency.value = 600;
-
-                    gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
-
-                    osc.connect(filter);
-                    filter.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.4);
-                }, i * 40);
-            }
-        }
-
+        // ПРАВДИВЫЕ И РАСШИРЕННЫЕ ЛОГИ ВЗЛОМА
         const attackSteps = [
-            { t: "[INFO] Инициализация процесса с повышенными привилегиями TI...", type: 'ln-info' },
-            { t: "[OK] Открытие хэндла процесса lsass.exe (Прямой доступ к памяти)...", type: 'ln-info' },
-            { t: "[SUCCESS] Токены администратора успешно скопированы.", type: 'ln-info' },
-            { t: "[WARN] Попытка WinDefend заблокировать поток. Вызов NtTerminateProcess...", type: 'ln-warn' },
-            { t: "[SUCCESS] Служба Защитника Windows успешно убита в памяти.", type: 'ln-info' },
-            { t: "[INFO] Запуск bcdedit.exe /set {default} recoveryenabled No...", type: 'ln-info' },
-            { t: "[INFO] Запуск bcdedit.exe /set {default} bootstatuspolicy ignoreallfailures...", type: 'ln-info' },
-            { t: "[OK] Экран восстановления Windows заблокирован.", type: 'ln-info' },
-            { t: "[INFO] Вызов vssadmin.exe delete shadows /all /quiet...", type: 'ln-info' },
-            { t: "[DANGER] ВНИМАНИЕ: Все теневые копии и бэкапы системы уничтожены.", type: 'ln-danger' },
-            { t: "[INFO] Вызов wbadmin delete systemstatebackup...", type: 'ln-info' },
-            { t: "[OK] Архивы состояния системы удалены.", type: 'ln-info' },
-            { t: "[INFO] Сканирование таблиц дисков MFT (Master File Table)...", type: 'ln-info' },
-            { t: "[OK] Обнаружены локальные разделы: HarddiskVolume1 (C:), HarddiskVolume2 (D:)", type: 'ln-info' },
-            { t: "[WARN] Попытка драйвера файловой системы заблокировать запись во 0-й сектор...", type: 'ln-warn' },
-            { t: "[DANGER] Обход защиты диска: Запущена прямая перезапись MBR/GPT нулями...", type: 'ln-danger' },
-            { t: "[DANGER] Секторы разметки диска: [0x000000] -> [INVALID_DATA]", type: 'ln-danger' },
-            { t: "[INFO] Принудительная выгрузка критических библиотек ntdll.dll...", type: 'ln-info' },
-            { t: "[INFO] Остановка цикла обработки сообщений шины ввода-вывода...", type: 'ln-info' },
-            { t: "[WARN] Предупреждение шины ACPI: Температура VRM чипсета 98°C!", type: 'ln-warn' },
-            { t: "[DANGER] Попытка удержания напряжения: Сбой цепей питания процессора.", type: 'ln-danger' },
-            { t: "[INFO] Формирование Kernel-пакета принудительного выключения S5...", type: 'ln-info' },
-            { t: "[DANGER] Вызов аппаратного вектора прерывания ядра INT 15h / AH=53h...", type: 'ln-danger' },
-            { t: "[CRITICAL SYSTEM FAILURE] Критический крах ядра системы. Выключение...", type: 'ln-danger' }
+            { t: `[INFO] Сбор аппаратных данных узла: Обнаружено ядер CPU: ${cpuCores} | Платформа: ${detectedOS}...`, type: 'ln-info' },
+            { t: "[INFO] Инициализация процесса с повышенными привилегиями TrustedInstaller...", type: 'ln-info' },
+            { t: "[OK] Открытие прямого хэндла памяти дескриптора lsass.exe...", type: 'ln-info' },
+            { t: "[SUCCESS] Токены локального администратора SAM успешно импортированы.", type: 'ln-info' },
+            { t: "[WARN] Попытка WinDefend блокировки потока. Вызов прямого хука NtTerminateProcess...", type: 'ln-warn' },
+            { t: "[SUCCESS] Служба Защитника Windows принудительно остановлена в памяти Ring-0.", type: 'ln-info' },
+            { t: "[INFO] Модификация системных политик загрузки: bcdedit.exe /set {default} recoveryenabled No...", type: 'ln-info' },
+            { t: "[INFO] Блокировка отладки при сбоях: bcdedit.exe /set {default} bootstatuspolicy ignoreallfailures...", type: 'ln-info' },
+            { t: "[OK] Меню безопасного восстановления Windows заблокировано.", type: 'ln-info' },
+            { t: "[INFO] Уничтожение точек восстановления: vssadmin.exe delete shadows /all /quiet...", type: 'ln-info' },
+            { t: "[DANGER] ВНИМАНИЕ: Все теневые копии и бэкапы операционной системы удалены.", type: 'ln-danger' },
+            { t: "[INFO] Очистка архивов состояния: wbadmin delete systemstatebackup...", type: 'ln-info' },
+            { t: "[OK] Копии SystemStateBackup стёрты.", type: 'ln-info' },
+            { t: "[INFO] Чтение таблиц разметки дисков MFT (Master File Table)...", type: 'ln-info' },
+            { t: "[OK] Обнаружена файловая разметка: HarddiskVolume1 (C:), HarddiskVolume2 (D:)", type: 'ln-info' },
+            { t: "[WARN] Драйвер контроллера диска пытается выставить статус защиты от записи Write-Protect...", type: 'ln-warn' },
+            { t: "[DANGER] Прямой обход IOCTL: Запущена полная перезапись MBR/GPT таблицы секторов...", type: 'ln-danger' },
+            { t: "[DANGER] Секторы разметки диска: Зануление адресов [0x000000] -> [FATAL_CORRUPTION]", type: 'ln-danger' },
+            { t: "[INFO] Принудительная выгрузка ядра библиотек подсистемы Win32 ntdll.dll...", type: 'ln-info' },
+            { t: "[INFO] Прерывание циклов обработки прерываний шины ввода-вывода (I/O Freeze)...", type: 'ln-info' },
+            { t: "[WARN] Аппаратное предупреждение шины ACPI: Температура VRM материнской платы 98°C!", type: 'ln-warn' },
+            { t: "[DANGER] Каскадный сбой удержания фаз питания процессора (CORE_VOLTAGE_FAULT).", type: 'ln-danger' },
+            { t: "[INFO] Формирование Kernel-инструкции принудительного отключения фаз ACPI_S5...", type: 'ln-info' },
+            { t: "[DANGER] Вызов вектора прерывания процессора INT 15h / AH=53h (Аппаратный Halt)...", type: 'ln-danger' },
+            { t: "[CRITICAL SYSTEM FAILURE] Системные компоненты разрушены. Работа прекращена.", type: 'ln-danger' }
         ];
 
         let currentStep = 0;
-        let glitchSoundInterval;
 
         function initializeVirus() {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            // Включаем полноэкранный режим при клике (Иллюзия запуска программы)
+            const docElm = document.documentElement;
+            if (docElm.requestFullscreen) docElm.requestFullscreen();
+            else if (docElm.mozRequestFullScreen) docElm.mozRequestFullScreen();
+            else if (docElm.webkitRequestFullscreen) docElm.webkitRequestFullscreen();
+            else if (docElm.msRequestFullscreen) docElm.msRequestFullscreen();
+
             document.getElementById('gateOverlay').style.display = 'none';
             wrapper.style.display = 'block';
+            
             setTimeout(printLog, 500);
         }
 
@@ -338,24 +87,21 @@
                 logsContainer.appendChild(p);
                 logsContainer.scrollTop = logsContainer.scrollHeight;
 
-                playHDDNoise();
-                if (Math.random() > 0.4) playHDDNoise();
-
                 if (currentStep === 7) {
                     consoleWindow.classList.add('virus-shaking');
-                    glitchSoundInterval = setInterval(playGlitchSound, 160);
                 }
 
                 currentStep++;
                 
-                let lagDelay = Math.random() * 600 + 300;
-                if (currentStep > 7 && Math.random() > 0.8) {
-                    lagDelay = 1800;
+                // РЕАЛИСТИЧНЫЕ СИСТЕМНЫЕ ЛАГИ
+                let lagDelay = Math.random() * 500 + 250;
+                // Скрипт периодически "залипает" (как будто жесткий диск не справляется)
+                if (currentStep > 6 && Math.random() > 0.75) {
+                    lagDelay = Math.random() * 1500 + 1000; 
                 }
                 setTimeout(printLog, lagDelay);
             } else {
                 flash.style.animation = "hardware-die-burst 0.5s forwards";
-                clearInterval(glitchSoundInterval);
                 
                 setTimeout(() => {
                     document.getElementById('mainStage').style.display = 'none';
@@ -363,18 +109,16 @@
                     flash.style.opacity = '0';
                     shutdownScreen.style.display = 'flex';
                     
+                    // Синее окно висит 7 секунд, усыпляя бдительность
                     setTimeout(() => {
                         artifacts.style.display = 'block';
                         wrapper.style.transform = "rotate(43deg) scale(0.80)";
                         loaderCircle.classList.add('frozen-content');
                         
-                        let freezeBuzz = setInterval(playHDDNoise, 60);
-                        
+                        // Зависает под углом 43 градуса ровно на 4 секунды
                         setTimeout(() => {
-                            clearInterval(freezeBuzz);
                             wrapper.style.display = 'none';
                             finalBox.style.display = 'flex'; 
-                            playHardwareDestructionSound(); 
                         }, 4000);
 
                     }, 7000); 
