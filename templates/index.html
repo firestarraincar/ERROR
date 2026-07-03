@@ -162,6 +162,34 @@
             animation-play-state: paused !important;
             transition: none !important;
         }
+        
+        /* СТРАШНЫЙ ФИНАЛЬНЫЙ ЭКРАН */
+        .horror-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 200;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .horror-text {
+            color: #ff0033;
+            font-size: 45px;
+            font-weight: bold;
+            letter-spacing: 5px;
+            text-shadow: 0 0 20px #ff0000;
+            opacity: 0;
+            font-family: 'Courier New', Courier, monospace;
+            animation: textAppear 4s forwards ease-in-out;
+        }
+        @keyframes textAppear {
+            0% { opacity: 0; transform: scale(0.8); filter: blur(10px); }
+            40% { opacity: 1; filter: blur(0px); }
+            60% { transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1); }
+        }
     </style>
 </head>
 <body>
@@ -194,6 +222,11 @@
         </div>
     </div>
 
+    <!-- Контейнер для скримера/финала -->
+    <div class="horror-screen" id="horrorScreen">
+        <div class="horror-text">YOU CANNOT RUN</div>
+    </div>
+
     <script>
         const wrapper = document.getElementById('viewport-wrapper');
         const logsContainer = document.getElementById('logs');
@@ -201,6 +234,45 @@
         const shutdownScreen = document.getElementById('shutdownScreen');
         const flash = document.getElementById('flash');
         const artifacts = document.getElementById('artifacts');
+        const horrorScreen = document.getElementById('horrorScreen');
+
+        // ГЕНЕРАЦИЯ ЗВУКОВ БЕЗ ФАЙЛОВ (Через Web Audio API)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playGlitchSound() {
+            // Звук системного сбоя / треска видеокарты
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = Math.random() > 0.5 ? 'sawtooth' : 'square';
+            osc.frequency.setValueAtTime(Math.random() * 120 + 40, audioCtx.currentTime); // Низкий гул
+            osc.frequency.exponentialRampToValueAtTime(Math.random() * 800 + 200, audioCtx.currentTime + 0.15);
+            
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.15);
+        }
+
+        function playHorrorLaugh() {
+            // Синтез жуткого нисходящего смеха демонического вируса
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    let osc = audioCtx.createOscillator();
+                    let gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(140 - (i * 6), audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.2);
+                }, i * 180);
+            }
+        }
 
         const attackSteps = [
             { t: "[INFO] Инициализация скрытого дескриптора ядра...", type: 'ln-info' },
@@ -222,6 +294,7 @@
         ];
 
         let currentStep = 0;
+        let glitchSoundInterval;
 
         function printLog() {
             if (currentStep < attackSteps.length) {
@@ -234,12 +307,15 @@
 
                 if (currentStep === 7) {
                     consoleWindow.classList.add('virus-shaking');
+                    // Начинаем спамить жуткими звуками глитчей каждые 250мс
+                    glitchSoundInterval = setInterval(playGlitchSound, 250);
                 }
 
                 currentStep++;
                 setTimeout(printLog, Math.random() * 900 + 700);
             } else {
                 flash.style.animation = "hardware-die-burst 0.5s forwards";
+                clearInterval(glitchSoundInterval); // Временная пауза звука для контраста
                 
                 setTimeout(() => {
                     document.getElementById('mainStage').style.display = 'none';
@@ -251,9 +327,21 @@
                         artifacts.style.display = 'block';
                         wrapper.style.transform = "rotate(43deg) scale(0.82)";
                         
+                        // Повторяющийся предсмертный писк зависшего железа
+                        let freezeBleep = setInterval(playGlitchSound, 80);
+                        
                         setTimeout(() => {
                             document.body.classList.add('frozen-glitch');
                             wrapper.classList.add('frozen-glitch');
+                            clearInterval(freezeBleep); // Гасим писк железа перед полной тьмой
+                            
+                            // ЧЕРЕЗ 3 СЕКУНДЫ ЗАВИСАНИЯ - ПОЛНЫЙ МРАК И СЮРПРИЗ
+                            setTimeout(() => {
+                                wrapper.style.display = 'none';
+                                horrorScreen.style.display = 'flex';
+                                playHorrorLaugh(); // Запускаем жуткий смех вируса
+                            }, 3000);
+
                         }, 60);
                         
                     }, 6000); 
