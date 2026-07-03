@@ -3,669 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚠️ SYSTEM CRASH</title>
+    <title>SYSTEM BREACH</title>
     <style>
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
-        html, body {
+        body, html {
             width: 100%;
             height: 100%;
-            background: #000;
             overflow: hidden;
-            font-family: 'Segoe UI', 'Courier New', monospace;
-            cursor: default;
+            background-color: #000;
+            font-family: 'Segoe UI', 'Courier New', Courier, monospace;
         }
 
-        #container {
-            width: 100vw;
-            height: 100vh;
-            background: #000;
-            position: relative;
-            overflow: hidden;
+        /* Матричный фон */
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
         }
 
-        /* ===== КНОПКА ERROR (яркая, без наклона) ===== */
-        #errorBtn {
+        /* Эффект тревоги (хардкорное мигание) */
+        .glitch-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+            background: rgba(255, 0, 0, 0);
+            animation: redAlert 0.4s infinite alternate;
+        }
+
+        @keyframes redAlert {
+            0% { background: rgba(255, 0, 0, 0); }
+            100% { background: rgba(255, 0, 0, 0.15); }
+        }
+
+        /* Консоль */
+        .terminal {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 50;
-            background: transparent;
-            border: 4px solid #ff0040;
-            color: #ff0040;
-            font-family: 'Segoe UI', 'Courier New', monospace;
-            font-size: 4rem;
-            font-weight: 900;
-            padding: 40px 80px;
-            cursor: pointer;
-            letter-spacing: 10px;
-            text-shadow: 0 0 40px #ff004088, 0 0 80px #ff004044, 0 0 120px #ff004022;
-            box-shadow: 0 0 60px rgba(255, 0, 64, 0.3), inset 0 0 60px rgba(255, 0, 64, 0.1);
-            transition: all 0.3s;
-            animation: btnPulse 1.2s ease-in-out infinite;
-            text-transform: uppercase;
-        }
-
-        #errorBtn:hover {
-            background: rgba(255, 0, 64, 0.15);
-            box-shadow: 0 0 100px rgba(255, 0, 64, 0.5), inset 0 0 80px rgba(255, 0, 64, 0.2);
-            transform: translate(-50%, -50%) scale(1.05);
-        }
-
-        @keyframes btnPulse {
-            0%, 100% {
-                text-shadow: 0 0 40px #ff004088, 0 0 80px #ff004044;
-                box-shadow: 0 0 60px rgba(255, 0, 64, 0.3);
-            }
-            50% {
-                text-shadow: 0 0 60px #ff0040cc, 0 0 120px #ff004066, 0 0 180px #ff004033;
-                box-shadow: 0 0 100px rgba(255, 0, 64, 0.5);
-            }
-        }
-
-        #errorBtn .sub {
-            display: block;
-            font-size: 0.8rem;
-            letter-spacing: 6px;
-            margin-top: 10px;
-            opacity: 0.6;
-            font-weight: 300;
-            color: #ff004088;
-        }
-
-        #errorBtn .icon {
-            font-size: 2rem;
-            margin-right: 15px;
-        }
-
-        /* ===== ГЛЮК-СЛОЙ ===== */
-        #glitchLayer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 10;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        #glitchLayer.active {
-            opacity: 1;
-        }
-
-        .glitch-line {
-            position: absolute;
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            text-shadow: 0 0 20px currentColor;
-        }
-
-        /* ===== СМАЗЫВАНИЕ (движение) ===== */
-        #motionBlur {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 12;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.1s;
-        }
-
-        #motionBlur.active {
-            opacity: 0.9;
-            animation: blurShift 0.04s steps(2) infinite;
-        }
-
-        @keyframes blurShift {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(3px, -2px) scale(1.01); }
-        }
-
-        /* ===== РАЗМЫТИЕ ===== */
-        #blurOverlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 11;
-            pointer-events: none;
-            backdrop-filter: blur(0px);
-            transition: backdrop-filter 0.1s;
-        }
-
-        #blurOverlay.active {
-            backdrop-filter: blur(6px);
-        }
-
-        #blurOverlay.heavy {
-            backdrop-filter: blur(15px);
-        }
-
-        /* ===== СИНЯЯ ВСПЫШКА (BSOD) ===== */
-        #blueScreen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #0a2a8a;
-            z-index: 20;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.8s;
+            width: 85%;
+            max-width: 750px;
+            height: 480px;
+            background-color: rgba(5, 5, 5, 0.9);
+            border: 2px solid #ff0055;
+            box-shadow: 0 0 30px #ff0055;
+            z-index: 3;
             display: flex;
-            justify-content: center;
-            align-items: center;
             flex-direction: column;
         }
 
-        #blueScreen.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        /* ===== ТЕКСТ НА СИНЕМ ЭКРАНЕ ===== */
-        #bsodText {
-            color: #ffffff;
-            font-family: 'Segoe UI', 'Courier New', monospace;
-            text-align: center;
-            padding: 40px;
-            max-width: 800px;
-        }
-
-        #bsodText .title {
-            font-size: 3.5rem;
-            font-weight: 900;
-            letter-spacing: 6px;
-            margin-bottom: 20px;
-            text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
-        }
-
-        #bsodText .subtitle {
-            font-size: 1.2rem;
-            font-weight: 300;
-            margin-bottom: 30px;
-            opacity: 0.8;
-            letter-spacing: 2px;
-        }
-
-        #bsodText .code {
-            font-family: 'Courier New', monospace;
-            font-size: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 15px 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            margin-bottom: 30px;
+        .terminal-header {
+            background-color: #1a0008;
+            border-bottom: 2px solid #ff0055;
+            padding: 10px 15px;
+            color: #ff0055;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 14px;
             letter-spacing: 1px;
         }
 
-        /* ===== КРУТЯЩИЕСЯ ТОЧКИ ===== */
-        #spinner {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            position: relative;
-            margin: 20px auto;
+        .terminal-body {
+            padding: 15px;
+            color: #ff3366;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-y: auto;
+            flex-grow: 1;
+            font-family: monospace;
         }
 
-        #spinner .dot {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #ffffff;
-            opacity: 0;
-            animation: dotSpin 1.6s ease-in-out infinite;
+        .critical {
+            color: #ff0000;
+            font-weight: bold;
+            text-shadow: 0 0 8px #ff0000;
         }
 
-        #spinner .dot:nth-child(1) { animation-delay: 0.0s; }
-        #spinner .dot:nth-child(2) { animation-delay: 0.2s; }
-        #spinner .dot:nth-child(3) { animation-delay: 0.4s; }
-        #spinner .dot:nth-child(4) { animation-delay: 0.6s; }
-        #spinner .dot:nth-child(5) { animation-delay: 0.8s; }
-        #spinner .dot:nth-child(6) { animation-delay: 1.0s; }
-        #spinner .dot:nth-child(7) { animation-delay: 1.2s; }
-        #spinner .dot:nth-child(8) { animation-delay: 1.4s; }
+        .warning { color: #ffcc00; }
+        .destruct { color: #ff0055; font-weight: bold; font-size: 15px; }
 
-        @keyframes dotSpin {
-            0%, 100% {
-                opacity: 0;
-                transform: scale(0.5);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.2);
-            }
+        /* ЭКРАН ВЫКЛЮЧЕНИЯ WINDOWS */
+        .windows-shutdown {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #004275; /* Фирменный синий цвет Windows */
+            z-index: 100;
+            display: none; /* Скрыт по умолчанию */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
         }
 
-        /* Позиции точек (круг) */
-        #spinner .dot:nth-child(1) { top: 0; left: 50%; transform: translateX(-50%); }
-        #spinner .dot:nth-child(2) { top: 15%; right: 15%; }
-        #spinner .dot:nth-child(3) { top: 50%; right: 0; transform: translateY(-50%); }
-        #spinner .dot:nth-child(4) { bottom: 15%; right: 15%; }
-        #spinner .dot:nth-child(5) { bottom: 0; left: 50%; transform: translateX(-50%); }
-        #spinner .dot:nth-child(6) { bottom: 15%; left: 15%; }
-        #spinner .dot:nth-child(7) { top: 50%; left: 0; transform: translateY(-50%); }
-        #spinner .dot:nth-child(8) { top: 15%; left: 15%; }
-
-        /* ===== ВЫКЛЮЧЕНИЕ (текст) ===== */
-        #shutdownText {
-            font-size: 1.5rem;
+        .shutdown-text {
+            font-size: 26px;
             font-weight: 300;
-            letter-spacing: 4px;
-            margin-top: 10px;
-            opacity: 0.8;
+            margin-bottom: 30px;
         }
 
-        #shutdownText .blink {
-            display: inline-block;
-            width: 8px;
-            height: 1.2em;
-            background: #ffffff;
-            animation: blink 0.8s infinite;
-            vertical-align: text-bottom;
-            margin-left: 8px;
+        /* Крутящиеся точки Windows */
+        .win-spinner {
+            position: relative;
+            width: 50px;
+            height: 50px;
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        /* ===== ЧЁРНЫЙ ЭКРАН (финал) ===== */
-        #blackScreen {
+        .win-dot {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            z-index: 30;
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
             opacity: 0;
-            pointer-events: none;
-            transition: opacity 1s;
+            transform: rotate(225deg);
+            animation: orbit 5.5s infinite;
         }
 
-        #blackScreen.active {
-            opacity: 1;
-            pointer-events: all;
-        }
+        .win-dot:nth-child(1) { animation-delay: 240ms; }
+        .win-dot:nth-child(2) { animation-delay: 480ms; }
+        .win-dot:nth-child(3) { animation-delay: 720ms; }
+        .win-dot:nth-child(4) { animation-delay: 960ms; }
+        .win-dot:nth-child(5) { animation-delay: 1200ms; }
 
-        /* ===== ШУМ ===== */
-        #noise {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 2;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent 0px,
-                transparent 1px,
-                rgba(0, 255, 65, 0.02) 1px,
-                rgba(0, 255, 65, 0.02) 2px
-            );
-            animation: noiseMove 0.03s steps(3) infinite;
-            opacity: 0.3;
-        }
-
-        @keyframes noiseMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-2px, 2px); }
-        }
-
-        /* ===== ИСЧЕЗНОВЕНИЕ КНОПКИ ===== */
-        #errorBtn.hidden {
-            animation: btnDisappear 0.6s ease-out forwards;
-        }
-
-        @keyframes btnDisappear {
-            0% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
-                box-shadow: 0 0 60px rgba(255, 0, 64, 0.3);
-            }
-            100% {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(3);
-                box-shadow: 0 0 200px rgba(255, 0, 64, 0.8);
-            }
-        }
-
-        /* ===== ВСПЫШКА ПРИ НАЖАТИИ ===== */
-        #flash {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #fff;
-            z-index: 5;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.1s;
-        }
-
-        #flash.active {
-            opacity: 0.9;
-            transition: opacity 0.05s;
-        }
-
-        /* ===== АДАПТАЦИЯ ===== */
-        @media (max-width: 600px) {
-            #errorBtn {
-                font-size: 2rem;
-                padding: 25px 40px;
-                letter-spacing: 5px;
-            }
-            #errorBtn .sub {
-                font-size: 0.6rem;
-            }
-            #bsodText .title {
-                font-size: 2rem;
-            }
-            #bsodText .subtitle {
-                font-size: 0.9rem;
-            }
-            #bsodText .code {
-                font-size: 0.7rem;
-                padding: 10px 15px;
-            }
-            #shutdownText {
-                font-size: 1rem;
-            }
-            #spinner {
-                width: 30px;
-                height: 30px;
-            }
-            #spinner .dot {
-                width: 7px;
-                height: 7px;
-            }
+        @keyframes orbit {
+            0% { transform: rotate(225deg); opacity: 1; animation-timing-function: ease-out; }
+            7% { transform: rotate(345deg); animation-timing-function: linear; }
+            30% { transform: rotate(455deg); animation-timing-function: ease-in-out; }
+            39% { transform: rotate(690deg); animation-timing-function: linear; }
+            70% { transform: rotate(815deg); opacity: 1; animation-timing-function: ease-out; }
+            75% { transform: rotate(945deg); animation-timing-function: ease-out; }
+            76% { transform: rotate(945deg); opacity: 0; }
+            100% { transform: rotate(945deg); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
-<div id="container">
+    <div class="glitch-overlay"></div>
+    <canvas id="matrix"></canvas>
 
-    <!-- ШУМ -->
-    <div id="noise"></div>
-
-    <!-- ВСПЫШКА -->
-    <div id="flash"></div>
-
-    <!-- ===== КНОПКА ERROR ===== -->
-    <button id="errorBtn">
-        <span class="icon">⚠️</span> ERROR
-        <span class="sub">▶ CLICK TO BREACH SYSTEM ◀</span>
-    </button>
-
-    <!-- ===== ГЛЮКИ ===== -->
-    <div id="glitchLayer"></div>
-
-    <!-- ===== СМАЗЫВАНИЕ ===== -->
-    <div id="motionBlur"></div>
-    <div id="blurOverlay"></div>
-
-    <!-- ===== СИНИЙ ЭКРАН (BSOD) ===== -->
-    <div id="blueScreen">
-        <div id="bsodText">
-            <div class="title">💀 SYSTEM CRASH</div>
-            <div class="subtitle">A fatal exception has occurred</div>
-            <div class="code">
-                <div>STOP: 0x0000007E (0xFFFFFFFF, 0x00000000, 0x00000000, 0x00000000)</div>
-                <div style="margin-top: 8px; opacity: 0.6; font-size: 0.8rem;">
-                    KMODE_EXCEPTION_NOT_HANDLED
-                </div>
-            </div>
-            <div id="spinner">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-            </div>
-            <div id="shutdownText">
-                ⏻ SHUTTING DOWN<span class="blink"></span>
-            </div>
+    <div class="terminal">
+        <div class="terminal-header">
+            <span>⚠️ SYSTEM_OVERRIDE.EXE</span>
+            <span class="critical">HARDCORE BREACH</span>
         </div>
+        <div class="terminal-body" id="logs"></div>
     </div>
 
-    <!-- ===== ЧЁРНЫЙ ЭКРАН ===== -->
-    <div id="blackScreen"></div>
+    <!-- Синий экран выключения -->
+    <div class="windows-shutdown" id="shutdownScreen">
+        <div class="win-spinner">
+            <div class="win-dot"></div>
+            <div class="win-dot"></div>
+            <div class="win-dot"></div>
+            <div class="win-dot"></div>
+            <div class="win-dot"></div>
+        </div>
+        <div class="shutdown-text">Выключение</div>
+    </div>
 
-</div>
+    <script>
+        // 1. Агрессивная матрица (Красные/Зеленые оттенки)
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        resize(); window.addEventListener('resize', resize);
 
-<script>
-    // ===== ГЕНЕРАЦИЯ ГЛЮКОВ =====
-    function generateGlitches() {
-        const layer = document.getElementById('glitchLayer');
-        const glitchTexts = [
-            'ERROR', 'SEGFAULT', 'KERNEL PANIC', 'DATA LOSS',
-            'MEMORY CORRUPT', 'STACK OVERFLOW', 'HEAP CORRUPT',
-            'ACCESS VIOLATION', 'SYSTEM CRASH', 'FATAL EXCEPTION',
-            'UNHANDLED INTERRUPT', 'DMA FAILURE', 'PCIe ERROR',
-            'BIOS CORRUPT', 'BOOT FAILURE', 'DISK ERROR',
-            'FS CORRUPTION', 'INODE LOST', 'JOURNAL ERROR',
-            '0xDEADBEEF', '0xCAFEBABE', '0xBAADF00D',
-            'IRQL_NOT_LESS_OR_EQUAL', 'PAGE_FAULT_IN_NONPAGED_AREA'
+        const chars = '01'.split('');
+        const fontSize = 14;
+        let columns = canvas.width / fontSize;
+        let rainDrops = Array(Math.floor(columns)).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillStyle = Math.random() > 0.8 ? '#ff0055' : '#00ff33'; // Смесь красного и зеленого хаоса
+                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.98) rainDrops[i] = 0;
+                rainDrops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 20);
+
+        // 2. Логи тотального уничтожения
+        const logs = document.getElementById('logs');
+        const hardLogs = [
+            "[CRITICAL] Обход корневой защиты ядра систем...",
+            "[ALERT] Внедрение вредоносного payload в процесс lsass.exe",
+            "[WARNING] Попытка блокировки со стороны антивируса... Подавлено!",
+            "[FATAL] Удаление таблицы разделов диска (MBR Override)...",
+            "[CRITICAL] Переполнение буфера памяти. Стек уничтожен.",
+            "[SYSTEM] Вызов прерывания ядра INT 19h (Перезагрузка)...",
+            "[HARDCORE] Стирание каталогов System32 и SysWOW64...",
+            "[💥 DESTROY] Полный захват шины питания материнской платы..."
         ];
 
-        for (let i = 0; i < 50; i++) {
-            const line = document.createElement('div');
-            line.className = 'glitch-line';
-            line.textContent = glitchTexts[Math.floor(Math.random() * glitchTexts.length)];
-            line.style.left = Math.random() * 95 + '%';
-            line.style.top = Math.random() * 95 + '%';
-            line.style.fontSize = (0.5 + Math.random() * 1.5) + 'rem';
-            line.style.color = ['#ff0040', '#00ff41', '#ffcc00', '#ff00ff', '#00ffff', '#ffffff'][Math.floor(Math.random() * 6)];
-            line.style.opacity = 0.1 + Math.random() * 0.9;
-            line.style.transform = `rotate(${(Math.random() - 0.5) * 20}deg) scale(${0.5 + Math.random()})`;
-            line.style.textShadow = `0 0 ${20 + Math.random() * 50}px currentColor`;
-            layer.appendChild(line);
+        function addLog() {
+            const line = hardLogs[Math.floor(Math.random() * hardLogs.length)];
+            const p = document.createElement('p');
+            p.className = line.includes('💥') ? 'destruct' : (line.includes('CRITICAL') || line.includes('FATAL') ? 'critical' : 'warning');
+            p.textContent = `[${new Date().toLocaleTimeString()}] ${line}`;
+            logs.appendChild(p);
+            logs.scrollTop = logs.scrollHeight;
         }
-    }
 
-    // ===== ГЛЮК-ЭФФЕКТЫ (30 секунд) =====
-    function startGlitchEffects() {
-        const container = document.getElementById('container');
-        const glitchLayer = document.getElementById('glitchLayer');
-        const motionBlur = document.getElementById('motionBlur');
-        const blurOverlay = document.getElementById('blurOverlay');
-        const glitchLines = document.querySelectorAll('.glitch-line');
+        // Спамим логами очень быстро
+        const logInterval = setInterval(addLog, 150);
 
-        // Активируем слои
-        glitchLayer.classList.add('active');
-        motionBlur.classList.add('active');
-        blurOverlay.classList.add('active');
-
-        // Перемещение строк глюков
-        let glitchInterval = setInterval(() => {
-            glitchLines.forEach(line => {
-                if (Math.random() < 0.4) {
-                    line.style.left = (Math.random() * 95) + '%';
-                    line.style.top = (Math.random() * 95) + '%';
-                    line.style.opacity = 0.1 + Math.random() * 0.9;
-                    line.style.transform = `rotate(${(Math.random() - 0.5) * 25}deg) scale(${0.5 + Math.random() * 1.5})`;
-                }
-                if (Math.random() < 0.15) {
-                    line.style.color = ['#ff0040', '#00ff41', '#ffcc00', '#ff00ff', '#00ffff', '#ffffff'][Math.floor(Math.random() * 6)];
-                }
-                if (Math.random() < 0.05) {
-                    line.textContent = ['ERROR', 'SEGFAULT', 'KERNEL PANIC', 'DATA LOSS', '0xDEADBEEF'][Math.floor(Math.random() * 5)];
-                }
-            });
-        }, 150);
-
-        // Смазывание экрана (сдвиг, размытие)
-        let blurInterval = setInterval(() => {
-            if (Math.random() < 0.5) {
-                const shiftX = (Math.random() - 0.5) * 30;
-                const shiftY = (Math.random() - 0.5) * 30;
-                motionBlur.style.transform = `translate(${shiftX}px, ${shiftY}px) scale(${1 + (Math.random() - 0.5) * 0.08})`;
-            }
-            if (Math.random() < 0.3) {
-                blurOverlay.classList.toggle('heavy');
-            }
-            if (Math.random() < 0.08) {
-                container.style.filter = `brightness(${0.2 + Math.random() * 0.8}) contrast(${0.5 + Math.random()})`;
-                setTimeout(() => { container.style.filter = 'none'; }, 150);
-            }
-            if (Math.random() < 0.05) {
-                // Красная вспышка
-                const flash = document.createElement('div');
-                flash.style.cssText = `
-                    position: absolute;
-                    top: 0; left: 0;
-                    width: 100%; height: 100%;
-                    background: rgba(255, 0, 0, 0.2);
-                    z-index: 8;
-                    pointer-events: none;
-                `;
-                container.appendChild(flash);
-                setTimeout(() => flash.remove(), 100);
-            }
-        }, 80);
-
-        // ===== ЧЕРЕЗ 30 СЕКУНД - СИНИЙ ЭКРАН =====
+        // 3. Скрипт триггера выключения (через 10 секунд)
         setTimeout(() => {
-            // Останавливаем глюки
-            clearInterval(glitchInterval);
-            clearInterval(blurInterval);
-
-            // Плавно убираем глюки
-            glitchLayer.style.transition = 'opacity 0.8s';
-            glitchLayer.style.opacity = '0';
-            motionBlur.style.transition = 'opacity 0.8s';
-            motionBlur.style.opacity = '0';
-            blurOverlay.style.transition = 'backdrop-filter 0.8s';
-            blurOverlay.classList.remove('active');
-
-            // Вспышка перед синим экраном
-            const flash = document.getElementById('flash');
-            flash.classList.add('active');
-            setTimeout(() => {
-                flash.classList.remove('active');
-                // Синий экран
-                document.getElementById('blueScreen').classList.add('active');
-            }, 300);
-
-        }, 30000); // 30 секунд глюков
-
-        // Сохраняем интервалы для очистки
-        window._glitchIntervals = [glitchInterval, blurInterval];
-    }
-
-    // ===== ОБРАБОТЧИК КНОПКИ =====
-    document.getElementById('errorBtn').addEventListener('click', function() {
-        // Скрываем кнопку
-        this.classList.add('hidden');
-
-        // Вспышка
-        const flash = document.getElementById('flash');
-        flash.classList.add('active');
-        setTimeout(() => {
-            flash.classList.remove('active');
-        }, 300);
-
-        // Генерируем глюки
-        generateGlitches();
-
-        // Запускаем эффекты через задержку
-        setTimeout(() => {
-            startGlitchEffects();
-        }, 500);
-
-        // Звук
-        setTimeout(playGlitchSound, 300);
-    });
-
-    // ===== ЗВУКОВОЙ ЭФФЕКТ =====
-    function playGlitchSound() {
-        try {
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-            // Шум
-            const bufferSize = audioCtx.sampleRate * 0.5;
-            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
-            }
-            const noise = audioCtx.createBufferSource();
-            noise.buffer = buffer;
-            const gainNode = audioCtx.createGain();
-            noise.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
-            noise.start(audioCtx.currentTime);
-            noise.stop(audioCtx.currentTime + 1);
-
-            // Гул
-            const osc = audioCtx.createOscillator();
-            const oscGain = audioCtx.createGain();
-            osc.connect(oscGain);
-            oscGain.connect(audioCtx.destination);
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(60, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(180, audioCtx.currentTime + 1);
-            oscGain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-            oscGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
-            osc.start(audioCtx.currentTime + 0.1);
-            osc.stop(audioCtx.currentTime + 1.1);
-
-        } catch(e) { /* тихо */ }
-    }
-
-    // ===== ПОЛНОЭКРАННЫЙ РЕЖИМ =====
-    document.addEventListener('click', () => {
-        if (document.fullscreenElement) return;
-        document.documentElement.requestFullscreen?.().catch(() => {});
-    });
-
-    // ===== СТРАШНАЯ КОНСОЛЬ =====
-    console.log('%c⚠️ SYSTEM CRITICAL ERROR ⚠️', 'color: #ff0040; font-size: 40px; font-weight: bold;');
-    console.log('%cPRESS THE ERROR BUTTON...', 'color: #ff0040; font-size: 20px;');
-
-    // ===== СИНИЙ ЭКРАН → ЧЁРНЫЙ =====
-    // Отслеживаем появление синего экрана
-    const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.target.classList.contains('active')) {
-                // Через 6 секунд после появления синего экрана - чёрный
-                setTimeout(() => {
-                    document.getElementById('blackScreen').classList.add('active');
-                }, 6000);
-            }
-        });
-    });
-
-    observer.observe(document.getElementById('blueScreen'), {
-        attributes: true,
-        attributeFilter: ['class']
-    });
-</script>
-
+            clearInterval(logInterval); // Останавливаем логи
+            document.getElementById('shutdownScreen').style.display = 'flex'; // Показываем экран Windows
+        }, 10000); // 10000 миллисекунд = 10 секунд
+    </script>
 </body>
 </html>
