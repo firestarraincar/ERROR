@@ -2,8 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ SYSTEM UPDATE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>System Status</title>
     <style>
         * {
             box-sizing: border-box;
@@ -15,10 +15,11 @@
             height: 100%;
             overflow: hidden;
             background-color: #000000;
-            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            /* Системный шрифт смартфонов и ПК по умолчанию */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        /* Кнопка запуска (Обход блокировок Fullscreen) */
+        /* Барьер для входа (обязателен для разблокировки Fullscreen на смартфонах) */
         .start-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -27,111 +28,99 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
         }
         .start-btn {
             background: transparent;
-            border: 1px solid #333333;
-            color: #888888;
-            padding: 12px 35px;
+            border: 1px solid #222222;
+            color: #555555;
+            padding: 14px 40px;
             font-size: 14px;
-            font-family: monospace;
             cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.2s ease;
-        }
-        .start-btn:hover {
-            border-color: #00ff33;
-            color: #00ff33;
+            border-radius: 4px;
         }
 
-        /* Обертка всего экрана, которая повернется на 43 градуса */
+        /* Главный контейнер (повернется на 43 градуса) */
         #viewport-wrapper {
             width: 100%;
             height: 100%;
             position: relative;
             background-color: #000000;
-            transition: transform 0.6s cubic-bezier(0.18, 0.9, 0.3, 1.3);
+            transition: transform 0.5s ease-in-out;
             transform-origin: center center;
             display: none;
+            padding: 30px 20px;
         }
-        
-        /* Реалистичные линии монитора */
-        .glitch-scanlines {
+
+        /* Экран системных логов прошивки/обновления */
+        .system-stage {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            color: #e0e0e0;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .log-line {
+            width: 100%;
+            word-break: break-all;
+            margin-bottom: 4px;
+        }
+
+        /* Фирменные артефакты "поплывшего" экрана смартфона */
+        .screen-damage {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
-            background-size: 100% 3px;
-            z-index: 20;
+            background: repeating-linear-gradient(90deg, transparent, transparent 15px, rgba(255, 0, 0, 0.15) 15px, rgba(255, 0, 0, 0.15) 16px),
+                        repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(0, 0, 255, 0.1) 20px, rgba(0, 0, 255, 0.1) 21px);
+            z-index: 10;
+            display: none;
             pointer-events: none;
         }
-        .stage {
-            position: absolute;
-            width: 100%; height: 100%;
-            padding: 25px;
-            display: flex; flex-direction: column;
-            justify-content: flex-start; align-items: flex-start;
-            z-index: 5;
-        }
-        .console-body {
-            color: #ffffff;
-            font-size: 14px;
-            line-height: 1.6;
-            white-space: pre-wrap;
-        }
 
-        /* Полупрозрачные артефакты видеокарты, накладываемые при повороте */
-        .gpu-artifacts {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(255, 0, 85, 0.15) 30px, rgba(255, 0, 85, 0.1) 32px),
-                        repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(0, 255, 100, 0.1) 40px, rgba(0, 255, 100, 0.05) 42px);
-            z-index: 10; display: none; pointer-events: none;
-        }
-
-        /* КРОВАВАЯ НАДПИСЬ ПОВЕРХ ПОВЕРНУТОГО ЭКРАНА */
+        /* КРОВАВАЯ НАДПИСЬ НАМЕРТВО ПОВЕРХ ВСЕГО */
         .horror-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: 100;
-            display: none; 
-            justify-content: center; 
+            display: none;
+            justify-content: center;
             align-items: center;
-            background: rgba(0, 0, 0, 0.4); /* Оставляем логи видимыми на заднем фоне */
+            background: rgba(0, 0, 0, 0.6);
         }
         .horror-msg {
-            color: #ff0011; 
-            font-size: 55px; 
+            color: #ff0516;
+            font-size: 32px; /* Идеальный размер под экраны мобильных */
             font-weight: 900;
-            font-family: 'Courier New', Courier, monospace;
-            text-shadow: 0 0 35px #ff0000;
-            letter-spacing: 5px;
+            letter-spacing: 2px;
             text-align: center;
-            animation: blood-pulse 1.3s infinite alternate;
+            text-shadow: 0 0 25px #ff0000;
+            padding: 0 20px;
+            animation: blood-pulse 1.4s infinite alternate;
         }
         @keyframes blood-pulse {
-            0% { opacity: 0.2; transform: scale(0.95); filter: blur(2px); }
+            0% { opacity: 0.3; transform: scale(0.97); filter: blur(1px); }
             100% { opacity: 1; transform: scale(1.03); filter: blur(0px); }
         }
     </style>
 </head>
 <body>
-    <!-- Интерактивный барьер для Fullscreen -->
+    <!-- Неброская кнопка авторизации для включения Fullscreen на iOS/Android -->
     <div class="start-overlay" id="gateOverlay">
-        <button class="start-btn" onclick="initializeVirus()">Войти в систему</button>
+        <button class="start-btn" onclick="initializeVirus()">Продолжить</button>
     </div>
 
-    <div class="glitch-scanlines"></div>
-
     <div id="viewport-wrapper">
-        <div class="gpu-artifacts" id="artifacts"></div>
+        <div class="screen-damage" id="artifacts"></div>
 
-        <div class="stage" id="mainStage">
-            <div class="console-body" id="logs"></div>
+        <div class="system-stage">
+            <div id="logs"></div>
         </div>
 
-        <!-- Надпись теперь появляется прямо внутри повернутого wrapper'а -->
+        <!-- Кровавый текст внутри вращаемой зоны -->
         <div class="horror-overlay" id="finalHorrorBox">
             <div class="horror-msg">ТВОЙ КОМПЬЮТЕР МОЙ</div>
         </div>
@@ -142,87 +131,77 @@
         const artifacts = document.getElementById('artifacts');
         const finalBox = document.getElementById('finalHorrorBox');
 
-        const cpuCores = navigator.hardwareConcurrency || 4;
-        const userAgent = navigator.userAgent;
-        let detectedOS = "Windows 10 Pro Core (x64)";
-        if (userAgent.includes("Mac")) detectedOS = "macOS Kernel Architecture";
-
-        // Спокойные, пугающие системные логи подключения
+        // Мобильные и серверные логи, имитирующие официальную прошивку/дамп
         const attackSteps = [
-            { t: "Microsoft Windows [Version 10.0.22631.3165]" },
-            { t: "(c) Корпорация Майкрософт (Microsoft Corporation). Все права защищены." },
-            { t: "" },
-            { t: "C:\\Windows\\system32>echo Инициализация проверки целостности системы..." },
-            { t: `[СИСТЕМА] Обнаружена архитектура: x64 | Ядер процессора: ${cpuCores} | Сборка ОС: ${detectedOS}` },
-            { t: "[СИСТЕМА] Запуск фоновой службы диагностики оборудования..." },
-            { t: "Проверка диска C: в режиме чтения... Выполнено 100%. Ошибок не обнаружено." },
-            { t: "" },
-            { t: "[ВНИМАНИЕ] Обнаружено активное удаленное подключение через порт 3389 (RDP)." },
-            { t: "[СЛУЖБА СЕТИ] Входящий IP-адрес сессии: 185.220.101.5 (Подключение: Стокгольм, Швеция)" },
-            { t: "[СЛУЖБА СЕТИ] Статус сессии: Сессия активна. Запрос прав суперпользователя (SYSTEM)..." },
-            { t: "[БЕЗОПАСНОСТЬ] Запрос одобрен локальной службой аутентификации lsass.exe." },
-            { t: "[ДИАГНОСТИКА] Инициировано чтение скрытого каталога C:\\Users\\...\\AppData\\Local\\" },
-            { t: "[СЛУЖБА СЕТИ] Начато фоновое копирование зашифрованного архива данных (размер: 4.1 Гб)..." },
-            { t: "Передача пакетов: Сектор 0x001... Сектор 0x045... Сектор 0x120... Выгрузка завершена." },
-            { t: "" },
-            { t: "[СИСТЕМА] Попытка перехвата управления со стороны локального пользователя заблокирована." },
-            { t: "[СИСТЕМА] Регистрация устройств ввода: Клавиатура и мышь переведены в режим ожидания (NtLock)." },
-            { t: "[СИСТЕМА] Ошибка: Удаленная сессия установила полный контроль над графическим сервером (GUI)." },
-            { t: "[СИСТЕМА] Переход в автономный режим отображения. Ожидание команд оператора..." }
+            { t: "Android Bootloader Utility v4.19.0-release" },
+            { t: "SYS_INIT: Проверка разделов памяти устройства..." },
+            { t: "Storage: eMMC/UFS internal flash detected." },
+            { t: "Partition Check: /system [OK], /vendor [OK], /data [OK]" },
+            { t: "Инициализация безопасного шлюза загрузки..." },
+            { t: "[ВНИМАНИЕ] Обнаружено стороннее сетевое подключение: Bridge_Interface_v4" },
+            { t: "[СЕТЬ] Удаленный адрес хоста: 185.220.101.5 (Швеция, Стокгольм)" },
+            { t: "[БЕЗОПАСНОСТЬ] Запрос на чтение зашифрованного хранилища ключей Keystore..." },
+            { t: "[БЕЗОПАСНОСТЬ] Доступ предоставлен (Уровень привилегий: ROOT_SYSTEM)" },
+            { t: "Запущена фоновая выгрузка пакетов конфигурации во внешний кэш..." },
+            { t: "Синхронизация каталогов: /data/user/0/com.android.providers... 12%" },
+            { t: "Синхронизация каталогов: /data/user/0/com.android.providers... 48%" },
+            { t: "Синхронизация каталогов: /data/user/0/com.android.providers... 89%" },
+            { t: "Выгрузка пользовательского архива завершена успешно (Размер: 3.8 Гб)." },
+            { t: "[СИСТЕМА] Попытка принудительной перезагрузки устройства пользователем..." },
+            { t: "[СИСТЕМА] Отклонено. Служба ввода ввода блокирована аппаратным флагом NtLock." },
+            { t: "Модификация ядра: Внедрение патча системных дескрипторов..." },
+            { t: "Статус выполнения: Ожидание подтверждения удаленного оператора..." }
         ];
 
         let currentStep = 0;
 
-        // Перехват клавиш обновления страницы
+        // Полная блокировка стандартных клавиш управления на ПК
         window.addEventListener('keydown', function(e) {
             if (e.key === 'F5' || (e.ctrlKey && e.key === 'r') || e.key === 'Escape' || e.key === 'Alt') {
                 e.preventDefault();
-                const p = document.createElement('p');
-                p.textContent = `[СИСТЕМА] Клавиша [${e.key.toUpperCase()}] игнорируется. Доступ к клавиатуре заблокирован удаленным узлом.`;
-                logsContainer.appendChild(p);
-                logsContainer.parentNode.scrollTop = logsContainer.parentNode.scrollHeight;
             }
         });
 
         function initializeVirus() {
+            // Включаем полноэкранный режим (работает и на ПК, и на смартфонах)
             const docElm = document.documentElement;
             if (docElm.requestFullscreen) docElm.requestFullscreen();
             else if (docElm.webkitRequestFullscreen) docElm.webkitRequestFullscreen();
 
             document.getElementById('gateOverlay').style.display = 'none';
             wrapper.style.display = 'block';
+
+            // На телефонах текст «Твой компьютер мой» динамически меняется на «Твое устройство мое»
+            if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                document.querySelector('.horror-msg').textContent = 'ТВОЕ УСТРОЙСТВО МОЕ';
+            }
             
-            setTimeout(printLog, 800);
+            setTimeout(printLog, 600);
         }
 
         function printLog() {
             if (currentStep < attackSteps.length) {
                 const step = attackSteps[currentStep];
-                const p = document.createElement('p');
-                p.textContent = step.t;
+                const p = document.createElement('div');
+                p.className = 'log-line';
+                p.textContent = `> ${step.t}`;
                 logsContainer.appendChild(p);
-                
-                logsContainer.parentNode.scrollTop = logsContainer.parentNode.scrollHeight;
 
                 currentStep++;
-                // Идеально ровный, официальный шаг вывода
-                setTimeout(printLog, 950);
+                // Идеально ровный и гладкий вывод строк без лагов и пафоса
+                setTimeout(printLog, 850);
             } else {
-                // ФИНАЛ БЕЗ ВЫКЛЮЧЕНИЯ:
-                // Ждем 1.5 секунды после последнего лога, чтобы человек успел прочитать
+                // ФИНАЛ: Экран тихо застывает, косится и выводит текст
                 setTimeout(() => {
-                    // Врубаем сетку артефактов на экране
                     artifacts.style.display = 'block';
+                    // Плавный завал на 43 градуса
+                    wrapper.style.transform = "rotate(43deg) scale(0.85)";
                     
-                    // Резко разворачиваем весь экран вместе с логами на 43 градуса
-                    wrapper.style.transform = "rotate(43deg) scale(0.82)";
-                    
-                    // Прямо поверх этого перекошенного хаоса выводим кровавую надпись
                     setTimeout(() => {
                         finalBox.style.display = 'flex';
-                    }, 300);
+                    }, 400);
 
-                }, 1500);
+                }, 1200);
             }
         }
     </script>
