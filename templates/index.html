@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>System Status</title>
+    <title>System Diagnostics</title>
     <style>
         * {
             box-sizing: border-box;
@@ -15,11 +15,10 @@
             height: 100%;
             overflow: hidden;
             background-color: #000000;
-            /* Системный шрифт смартфонов и ПК по умолчанию */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        /* Барьер для входа (обязателен для разблокировки Fullscreen на смартфонах) */
+        /* Минималистичная незаметная кнопка */
         .start-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -32,26 +31,21 @@
         .start-btn {
             background: transparent;
             border: 1px solid #222222;
-            color: #555555;
-            padding: 14px 40px;
-            font-size: 14px;
+            color: #444444;
+            padding: 12px 35px;
+            font-size: 13px;
             cursor: pointer;
             border-radius: 4px;
         }
 
-        /* Главный контейнер (повернется на 43 градуса) */
         #viewport-wrapper {
             width: 100%;
             height: 100%;
-            position: relative;
             background-color: #000000;
-            transition: transform 0.5s ease-in-out;
-            transform-origin: center center;
             display: none;
-            padding: 30px 20px;
+            padding: 25px 20px;
         }
 
-        /* Экран системных логов прошивки/обновления */
         .system-stage {
             width: 100%;
             height: 100%;
@@ -59,7 +53,7 @@
             flex-direction: column;
             justify-content: flex-start;
             align-items: flex-start;
-            color: #e0e0e0;
+            color: #d4d4d4;
             font-size: 13px;
             line-height: 1.6;
         }
@@ -67,103 +61,81 @@
         .log-line {
             width: 100%;
             word-break: break-all;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
-        /* Фирменные артефакты "поплывшего" экрана смартфона */
-        .screen-damage {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: repeating-linear-gradient(90deg, transparent, transparent 15px, rgba(255, 0, 0, 0.15) 15px, rgba(255, 0, 0, 0.15) 16px),
-                        repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(0, 0, 255, 0.1) 20px, rgba(0, 0, 255, 0.1) 21px);
-            z-index: 10;
+        /* Строгий, официальный финальный текст */
+        .final-notice {
+            margin-top: 20px;
+            color: #ff2233;
+            font-weight: 600;
             display: none;
-            pointer-events: none;
-        }
-
-        /* КРОВАВАЯ НАДПИСЬ НАМЕРТВО ПОВЕРХ ВСЕГО */
-        .horror-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 100;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.6);
-        }
-        .horror-msg {
-            color: #ff0516;
-            font-size: 32px; /* Идеальный размер под экраны мобильных */
-            font-weight: 900;
-            letter-spacing: 2px;
-            text-align: center;
-            text-shadow: 0 0 25px #ff0000;
-            padding: 0 20px;
-            animation: blood-pulse 1.4s infinite alternate;
-        }
-        @keyframes blood-pulse {
-            0% { opacity: 0.3; transform: scale(0.97); filter: blur(1px); }
-            100% { opacity: 1; transform: scale(1.03); filter: blur(0px); }
         }
     </style>
 </head>
 <body>
-    <!-- Неброская кнопка авторизации для включения Fullscreen на iOS/Android -->
+    <!-- Кнопка для обхода политик безопасности браузера -->
     <div class="start-overlay" id="gateOverlay">
         <button class="start-btn" onclick="initializeVirus()">Продолжить</button>
     </div>
 
     <div id="viewport-wrapper">
-        <div class="screen-damage" id="artifacts"></div>
-
         <div class="system-stage">
             <div id="logs"></div>
-        </div>
-
-        <!-- Кровавый текст внутри вращаемой зоны -->
-        <div class="horror-overlay" id="finalHorrorBox">
-            <div class="horror-msg">ТВОЙ КОМПЬЮТЕР МОЙ</div>
+            <div class="final-notice" id="horrorText">ТВОЙ КОМПЬЮТЕР МОЙ</div>
         </div>
     </div>
     <script>
         const wrapper = document.getElementById('viewport-wrapper');
         const logsContainer = document.getElementById('logs');
-        const artifacts = document.getElementById('artifacts');
-        const finalBox = document.getElementById('finalHorrorBox');
+        const horrorText = document.getElementById('horrorText');
 
-        // Мобильные и серверные логи, имитирующие официальную прошивку/дамп
+        const cpuCores = navigator.hardwareConcurrency || 4;
+        const userAgent = navigator.userAgent;
+        let detectedOS = "Windows 10/11 Pro (x64)";
+        if (/Android|iPhone|iPad/i.test(userAgent)) detectedOS = "Mobile ARMv8 Kernel";
+
         const attackSteps = [
-            { t: "Android Bootloader Utility v4.19.0-release" },
-            { t: "SYS_INIT: Проверка разделов памяти устройства..." },
-            { t: "Storage: eMMC/UFS internal flash detected." },
-            { t: "Partition Check: /system [OK], /vendor [OK], /data [OK]" },
-            { t: "Инициализация безопасного шлюза загрузки..." },
-            { t: "[ВНИМАНИЕ] Обнаружено стороннее сетевое подключение: Bridge_Interface_v4" },
-            { t: "[СЕТЬ] Удаленный адрес хоста: 185.220.101.5 (Швеция, Стокгольм)" },
-            { t: "[БЕЗОПАСНОСТЬ] Запрос на чтение зашифрованного хранилища ключей Keystore..." },
-            { t: "[БЕЗОПАСНОСТЬ] Доступ предоставлен (Уровень привилегий: ROOT_SYSTEM)" },
-            { t: "Запущена фоновая выгрузка пакетов конфигурации во внешний кэш..." },
-            { t: "Синхронизация каталогов: /data/user/0/com.android.providers... 12%" },
-            { t: "Синхронизация каталогов: /data/user/0/com.android.providers... 48%" },
-            { t: "Синхронизация каталогов: /data/user/0/com.android.providers... 89%" },
-            { t: "Выгрузка пользовательского архива завершена успешно (Размер: 3.8 Гб)." },
-            { t: "[СИСТЕМА] Попытка принудительной перезагрузки устройства пользователем..." },
-            { t: "[СИСТЕМА] Отклонено. Служба ввода ввода блокирована аппаратным флагом NtLock." },
-            { t: "Модификация ядра: Внедрение патча системных дескрипторов..." },
-            { t: "Статус выполнения: Ожидание подтверждения удаленного оператора..." }
+            { t: "Microsoft Windows Diagnostics Subsystem [Build 22631]" },
+            { t: `[SYS] Считывание аппаратной конфигурации... Процессор: ${cpuCores} Cores | Платформа: ${detectedOS}` },
+            { t: "[SYS] Служба теневого копирования томов vssadmin успешно остановлена." },
+            { t: "[NET] Входящее RDP-соединение установлено по протоколу шифрования TLSv1.3." },
+            { t: "[NET] Сессия удаленного оператора: 185.220.101.5 (Стокгольм, Швеция)." },
+            { t: "[AUTH] Права локального доступа повышены до идентификатора NT AUTHORITY\\SYSTEM." },
+            { t: "[DATA] Запущен экспорт системных журналов и кэша учетных записей (размер: 3.8 Гб)..." },
+            { t: "Синхронизация блоков данных: [====================] 100% Выгрузка завершена." },
+            { t: "[СИСТЕМА] Обнаружена попытка вмешательства локального пользователя." },
+            { t: "[БЛОКИРОВКА] Перехват управления диспетчером задач завершен." },
+            { t: "[БЛОКИРОВКА] Закрытие сессии RDP ограничено политикой локальной безопасности." },
+            { t: "[ИНФО] Ожидание подтверждения удаленного сервера..." }
         ];
 
         let currentStep = 0;
 
-        // Полная блокировка стандартных клавиш управления на ПК
+        // 1. БЛОКИРОВКА ЗАКРЫТИЯ ВКЛАДКИ (Политика BeforeUnload)
+        // Браузер при попытке закрыть страницу или нажать "Назад" выдаст официальное окно-предупреждение
+        window.addEventListener('beforeunload', function (e) {
+            e.preventDefault();
+            e.returnValue = 'Внимание! Процесс шифрования системы не завершен. Закрытие страницы приведет к потере данных.';
+            return e.returnValue;
+        });
+
+        // 2. БЛОКИРОВКА ОБНОВЛЕНИЯ КЛАВИШАМИ
         window.addEventListener('keydown', function(e) {
-            if (e.key === 'F5' || (e.ctrlKey && e.key === 'r') || e.key === 'Escape' || e.key === 'Alt') {
+            if (e.key === 'F5' || (e.ctrlKey && e.key === 'r') || e.key === 'Escape' || e.key === 'Alt' || e.key === 'Backspace') {
                 e.preventDefault();
             }
         });
 
+        // 3. БЛОКИРОВКА ИСТОРИИ (Кнопка "Назад" на телефонах)
+        // Скрипт бесконечно спамит фейковую историю, чтобы кнопка "Назад" в браузере телефона просто обновляла эту же страницу
+        function blockBackButton() {
+            window.history.pushState(null, null, window.location.href);
+        }
+        window.addEventListener('popstate', blockBackButton);
+
         function initializeVirus() {
-            // Включаем полноэкранный режим (работает и на ПК, и на смартфонах)
+            // Разворачиваем на весь экран
             const docElm = document.documentElement;
             if (docElm.requestFullscreen) docElm.requestFullscreen();
             else if (docElm.webkitRequestFullscreen) docElm.webkitRequestFullscreen();
@@ -171,11 +143,15 @@
             document.getElementById('gateOverlay').style.display = 'none';
             wrapper.style.display = 'block';
 
-            // На телефонах текст «Твой компьютер мой» динамически меняется на «Твое устройство мое»
-            if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                document.querySelector('.horror-msg').textContent = 'ТВОЕ УСТРОЙСТВО МОЕ';
+            // Настраиваем надпись под тип устройства
+            if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+                horrorText.textContent = 'ТВОЕ УСТРОЙСТВО МОЕ';
             }
             
+            // Бесконечно забиваем историю браузера для блокировки кнопки назад
+            blockBackButton();
+            setInterval(blockBackButton, 100);
+
             setTimeout(printLog, 600);
         }
 
@@ -187,21 +163,17 @@
                 p.textContent = `> ${step.t}`;
                 logsContainer.appendChild(p);
 
-                currentStep++;
-                // Идеально ровный и гладкий вывод строк без лагов и пафоса
-                setTimeout(printLog, 850);
-            } else {
-                // ФИНАЛ: Экран тихо застывает, косится и выводит текст
-                setTimeout(() => {
-                    artifacts.style.display = 'block';
-                    // Плавный завал на 43 градуса
-                    wrapper.style.transform = "rotate(43deg) scale(0.85)";
-                    
-                    setTimeout(() => {
-                        finalBox.style.display = 'flex';
-                    }, 400);
+                // Плавная прокрутка логов
+                logsContainer.parentNode.scrollTop = logsContainer.parentNode.scrollHeight;
 
-                }, 1200);
+                currentStep++;
+                setTimeout(printLog, 900);
+            } else {
+                // Без всяких эффектов просто выводим финальную строку внизу
+                setTimeout(() => {
+                    horrorText.style.display = 'block';
+                    logsContainer.parentNode.scrollTop = logsContainer.parentNode.scrollHeight;
+                }, 1000);
             }
         }
     </script>
